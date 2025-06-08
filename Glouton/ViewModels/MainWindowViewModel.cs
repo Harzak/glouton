@@ -11,13 +11,15 @@ public class MainWindowViewModel : BaseViewModel
 {
     private IFileWatcherService _watcher;
 
-    public ObservableCollection<string> Files { get;  } 
+    public ObservableCollection<string> Files { get;  }
+    public LogViewModel LogViewModel { get; }
 
-    public MainWindowViewModel(IFileWatcherService watcher)
+    public MainWindowViewModel(IFileWatcherService watcher, ILoggingService logger)
     {
         _watcher = watcher;
 
         this.Files = [];
+        this.LogViewModel = new LogViewModel(logger);
 
         _watcher.Created += (sender, e) =>
         {

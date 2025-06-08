@@ -11,6 +11,7 @@ namespace Glouton.Features.FileManagement.FileWatcher;
 internal sealed class FileWatcherService : IFileWatcherService
 {
     private readonly IFileEventDispatcher _dispatcher;
+    private readonly ILoggingService _logging;
 
     private FileSystemWatcher? _fileWatcher;
     private CompositeDisposable? _subsriptions;
@@ -24,9 +25,16 @@ internal sealed class FileWatcherService : IFileWatcherService
 
     public bool IsStarted {  get; private set; }
 
-    public FileWatcherService(IFileEventDispatcher  dispatcher)
+    public FileWatcherService(IFileEventDispatcher dispatcher, ILoggingService logging)
     {
-        _dispatcher = dispatcher;  
+        _dispatcher = dispatcher;
+        _logging = logging;
+
+        _logging.LogWarning("WARN");
+        _logging.LogError("ERROR");
+        _logging.LogInfo("INFO");
+        _logging.LogDebug("DEBUG");
+
     }
 
     public void Start(string location)

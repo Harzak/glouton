@@ -1,6 +1,7 @@
 ﻿using Glouton.Extensions;
 using Glouton.Features.FileManagement.FileEvent;
 using Glouton.Features.FileManagement.FileWatcher;
+using Glouton.Features.Loging;
 using Glouton.Interfaces;
 using Glouton.ViewModels;
 using Glouton.Views;
@@ -32,6 +33,7 @@ public partial class App : Application
 
                 services.AddSingleton<IFileEventDispatcher, FileEventDispatcher>();
                 services.AddSingleton<IFileWatcherService, FileWatcherService>();
+                services.AddSingleton<ILoggingService, LoggingService>();
             })
             .Build();
     }

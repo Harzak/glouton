@@ -6,18 +6,21 @@ using Glouton.Utils.Time;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
+/// <summary>
+/// Processes events triggered by the file watcher in batch mode
+/// </summary>
 internal sealed class FileEventBatchProcessor : IDisposable
 {
     private readonly int _maxBatchItem;
     private readonly ConcurrentQueue<FileEventActionModel> _queue;
     private readonly ConcurrentTimer _timer;
-    private readonly Action<List<FileEventActionModel>> _action;
+    private readonly Action<List<FileEventActionModel>> _filesAction;
 
-    internal FileEventBatchProcessor(Action<List<FileEventActionModel>> action, 
+    internal FileEventBatchProcessor(Action<List<FileEventActionModel>> filesAction, 
         int batchExecutionInterval,
         int maxBatchItem)
     {
-        _action = action;
+        _filesAction = filesAction;
         _maxBatchItem = maxBatchItem;
         _queue = [];
         _timer = new ConcurrentTimer(batchExecutionInterval)
@@ -27,9 +30,15 @@ internal sealed class FileEventBatchProcessor : IDisposable
         _timer.Elapsed += OnTimerElapsed;
     }
 
+    public void Enqueue(FileEventActionModel model)
+    {
+        _queue.Enqueue(model);
+        _timer.Start();
+    }
+
     private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
     {
-        var list = new List<FileEventActionModel>();
+        List<FileEventActionModel> list = [];
         int index = 0;
         while (index < _maxBatchItem && _queue.TryDequeue(out var elem))
         {
@@ -37,14 +46,8 @@ internal sealed class FileEventBatchProcessor : IDisposable
             index++;
         }
 
-        _action.Invoke(list);
+        _filesAction.Invoke(list);
     }   
-
-    public void Enqueue(FileEventActionModel model)
-    {
-        _queue.Enqueue(model);
-        _timer.Start();
-    }
 
     public void Dispose()
     {

@@ -17,7 +17,7 @@ internal sealed class FileEventDispatcher : IFileEventDispatcher, IDisposable
 
     public FileEventDispatcher()
     {
-        _batchProcessor = new FileEventBatchProcessor(action: Invoke, SettingsCST.BATCH_EXECUTION_INTERVAL, SettingsCST.MAX_BATCH_ITEM);
+        _batchProcessor = new FileEventBatchProcessor(filesAction: Invoke, SettingsCST.BATCH_EXECUTION_INTERVAL, SettingsCST.MAX_BATCH_ITEM);
     }
 
     private void Invoke(List<FileEventActionModel> actions)

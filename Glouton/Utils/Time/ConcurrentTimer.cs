@@ -3,6 +3,9 @@ using System.Timers;
 
 namespace Glouton.Utils.Time;
 
+/// <summary>
+/// Thread-safe timer with end-action
+/// </summary>
 internal sealed class ConcurrentTimer : IDisposable
 {
     private readonly object _lock;
