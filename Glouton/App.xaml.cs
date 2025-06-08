@@ -1,5 +1,9 @@
 ﻿using Glouton.Extensions;
+using Glouton.Features.FileManagement.FileEvent;
+using Glouton.Features.FileManagement.FileWatcher;
+using Glouton.Interfaces;
 using Glouton.ViewModels;
+using Glouton.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Configuration;
@@ -23,9 +27,11 @@ public partial class App : Application
             {
                 services.AddSingleton(s => new MainWindow()
                 {
-                    DataContext = s.GetRequiredService<HomeViewModel>()
+                    DataContext = s.GetRequiredService<MainWindowViewModel>()
                 });
-                //services.AddSingleton<IThemeService, ThemeService>();
+
+                services.AddSingleton<IFileEventDispatcher, FileEventDispatcher>();
+                services.AddSingleton<IFileWatcherService, FileWatcherService>();
             })
             .Build();
     }

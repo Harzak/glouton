@@ -43,6 +43,7 @@ internal sealed class FileEventBatchProcessor : IDisposable
     public void Enqueue(FileEventActionModel model)
     {
         _queue.Enqueue(model);
+        _timer.Start();
     }
 
     public void Dispose()

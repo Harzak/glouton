@@ -43,6 +43,7 @@ internal sealed class ConcurrentTimer : IDisposable
             if (_isStarted)
             {
                 _timer?.Stop();
+                _isStarted = false;
             }
         }
     }

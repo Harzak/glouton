@@ -1,12 +1,19 @@
 ﻿using Glouton.Features.FileManagement.FileEvent;
+using Glouton.Interfaces;
 using System;
+using System.CodeDom;
 using System.IO;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace Glouton.Features.FileManagement.FileWatcher;
 
-internal sealed class FileWatcherService
+internal sealed class FileWatcherService : IFileWatcherService
 {
+    private readonly IFileEventDispatcher _dispatcher;
+
     private FileSystemWatcher? _fileWatcher;
+    private CompositeDisposable? _subsriptions;
 
     public event FileSystemEventHandler? Created;
 
@@ -15,11 +22,11 @@ internal sealed class FileWatcherService
         get => IsStarted && _fileWatcher != null && _fileWatcher.EnableRaisingEvents;
     }
 
-    public bool IsStarted { private get; set; }
+    public bool IsStarted {  get; private set; }
 
-    public FileWatcherService()
+    public FileWatcherService(IFileEventDispatcher  dispatcher)
     {
-
+        _dispatcher = dispatcher;  
     }
 
     public void Start(string location)
@@ -34,14 +41,27 @@ internal sealed class FileWatcherService
     private void Subscribe(string location)
     {
         _fileWatcher = CreateFileWatcher(location);
-        _fileWatcher.Created += OnFileCreated;
-        _fileWatcher.Changed += OnFileCreated;
+
+        _subsriptions = new CompositeDisposable
+        {
+            Observable.FromEventPattern<FileSystemEventArgs>(_fileWatcher, "Changed")
+                    .Select(pattern => pattern.EventArgs)
+                    .DistinctUntilChanged(args => args, new FileSystemEventArgsEqualityComparer())
+                    .Subscribe((e) => OnFileChanged(this, e)) 
+        };
+
+        _fileWatcher.Error +=_fileWatcher_Error;
         _fileWatcher.EnableRaisingEvents = true;
     }
 
-    private void OnFileCreated(object sender, FileSystemEventArgs e)
+    private void _fileWatcher_Error(object sender, ErrorEventArgs e)
     {
-        FileEventDispatcher.Current.BeginInvoke(e, new Action(() =>
+        var ee = e;
+    }
+
+    private void OnFileChanged(object sender, FileSystemEventArgs e)
+    {
+        _dispatcher.BeginInvoke(e, new Action(() =>
         {
             if ((Directory.Exists(e.FullPath) || File.Exists(e.FullPath)))
             {
@@ -73,5 +93,6 @@ internal sealed class FileWatcherService
     public void Dispose()
     {
         _fileWatcher?.Dispose();
+        _subsriptions?.Dispose();
     }
 }

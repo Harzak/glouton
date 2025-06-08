@@ -1,28 +1,23 @@
-﻿using Glouton.Utils.TaskScheduling;
+﻿using Glouton.Interfaces;
+using Glouton.Utils.TaskScheduling;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SettingsCST = Glouton.Settings.Constants;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
-internal sealed class FileEventDispatcher : IDisposable
+internal sealed class FileEventDispatcher : IFileEventDispatcher, IDisposable
 {
-    private const int BATCH_EXECUTION_INTERVAL = 500;
-    private const int MAX_BATCH_ITEM = 50;
-
     private bool _disposedValue;
-    private static FileEventDispatcher? _inner;
-    private readonly FileEventBatchProcessor _actionQueue;
+    private readonly FileEventBatchProcessor _batchProcessor;
 
-    public static FileEventDispatcher Current => _inner ??= new FileEventDispatcher();
-
-    private FileEventDispatcher()
+    public FileEventDispatcher()
     {
-        _actionQueue = new FileEventBatchProcessor(action: Invoke, BATCH_EXECUTION_INTERVAL, MAX_BATCH_ITEM);
+        _batchProcessor = new FileEventBatchProcessor(action: Invoke, SettingsCST.BATCH_EXECUTION_INTERVAL, SettingsCST.MAX_BATCH_ITEM);
     }
 
     private void Invoke(List<FileEventActionModel> actions)
@@ -56,7 +51,7 @@ internal sealed class FileEventDispatcher : IDisposable
         {
             EventArgs = args
         };
-        this.BeginInvokeInner(() => _actionQueue.Enqueue(actionInvoker), cancellationToken);
+        this.BeginInvokeInner(() => _batchProcessor.Enqueue(actionInvoker), cancellationToken);
     }
 
     private void BeginInvokeInner(Action action, CancellationToken cancellationToken = default)
@@ -70,7 +65,7 @@ internal sealed class FileEventDispatcher : IDisposable
         {
             if (disposing)
             {
-                _actionQueue?.Dispose();
+                _batchProcessor?.Dispose();
             }
 
             _disposedValue = true;
