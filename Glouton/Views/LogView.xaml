@@ -2,7 +2,7 @@
              xmlns:converters="clr-namespace:Glouton.Converters" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Glouton.Views"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodels="clr-namespace:Glouton.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewmodels:LogViewModel}"
-             d:DesignHeight="450" d:DesignWidth="800" mc:Ignorable="d">
+             mc:Ignorable="d">
     <UserControl.Resources>
 
         <converters:LogLevelColorConverter x:Key="LogLevelColorConverter" />
