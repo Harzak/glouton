@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Timers;
+
+[assembly: InternalsVisibleTo("Glouton.Tests")]
 
 namespace Glouton.Utils.Time;
 

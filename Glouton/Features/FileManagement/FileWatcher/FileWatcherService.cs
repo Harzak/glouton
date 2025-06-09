@@ -11,7 +11,7 @@ namespace Glouton.Features.FileManagement.FileWatcher;
 internal sealed class FileWatcherService : IFileWatcherService
 {
     private readonly IFileEventDispatcher _dispatcher;
-    private readonly ILoggingService _logging;
+    private readonly ILoggingService _logger;
 
     private FileSystemWatcher? _fileWatcher;
     private CompositeDisposable? _subsriptions;
@@ -23,18 +23,12 @@ internal sealed class FileWatcherService : IFileWatcherService
         get => IsStarted && _fileWatcher != null && _fileWatcher.EnableRaisingEvents;
     }
 
-    public bool IsStarted {  get; private set; }
+    public bool IsStarted { get; private set; }
 
-    public FileWatcherService(IFileEventDispatcher dispatcher, ILoggingService logging)
+    public FileWatcherService(IFileEventDispatcher dispatcher, ILoggingService logger)
     {
         _dispatcher = dispatcher;
-        _logging = logging;
-
-        _logging.LogWarning("WARN");
-        _logging.LogError("ERROR");
-        _logging.LogInfo("INFO");
-        _logging.LogDebug("DEBUG");
-
+        _logger = logger;
     }
 
     public void Start(string location)
@@ -55,20 +49,23 @@ internal sealed class FileWatcherService : IFileWatcherService
             Observable.FromEventPattern<FileSystemEventArgs>(_fileWatcher, "Changed")
                     .Select(pattern => pattern.EventArgs)
                     .DistinctUntilChanged(args => args, new FileSystemEventArgsEqualityComparer())
-                    .Subscribe((e) => OnFileChanged(this, e)) 
+                    .Subscribe((e) => OnFileChanged(this, e))
         };
 
-        _fileWatcher.Error +=_fileWatcher_Error;
+        _fileWatcher.Error +=OnError;
         _fileWatcher.EnableRaisingEvents = true;
+
+        _logger.LogInfo($"File watcher started for {location}.");
     }
 
-    private void _fileWatcher_Error(object sender, ErrorEventArgs e)
+    private void OnError(object sender, ErrorEventArgs e)
     {
-        var ee = e;
+        _logger.LogError(e.GetException().Message);
     }
 
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
+        _logger.LogInfo($"File changed ({e.ChangeType}).", e.Name ?? "");
         _dispatcher.BeginInvoke(e, new Action(() =>
         {
             if ((Directory.Exists(e.FullPath) || File.Exists(e.FullPath)))
@@ -94,7 +91,7 @@ internal sealed class FileWatcherService : IFileWatcherService
         }
         else
         {
-            throw new ArgumentException("folder does not exist", nameof(folder));
+            throw new ArgumentException("Folder does not exist", nameof(folder));
         }
     }
 

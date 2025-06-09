@@ -8,6 +8,7 @@ internal sealed class FileEventActionModel
 {
     public Guid Id { get; set; }
     public FileSystemEventArgs? EventArgs { get; set; }
+    public string FileName => this.EventArgs?.Name ?? "<None>"; 
     public Action Action { get; set; }
     public CancellationToken CancellationToken { get; set; }
 

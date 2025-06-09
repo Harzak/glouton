@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Timers;
+using Glouton.Interfaces;
 using Glouton.Utils.Time;
 
 namespace Glouton.Features.FileManagement.FileEvent;
@@ -11,16 +12,20 @@ namespace Glouton.Features.FileManagement.FileEvent;
 /// </summary>
 internal sealed class FileEventBatchProcessor : IDisposable
 {
+    private readonly ILoggingService _logger;   
+
     private readonly int _maxBatchItem;
     private readonly ConcurrentQueue<FileEventActionModel> _queue;
     private readonly ConcurrentTimer _timer;
     private readonly Action<List<FileEventActionModel>> _filesAction;
 
-    internal FileEventBatchProcessor(Action<List<FileEventActionModel>> filesAction, 
+    internal FileEventBatchProcessor(Action<List<FileEventActionModel>> filesAction,
+        ILoggingService logger,
         int batchExecutionInterval,
         int maxBatchItem)
     {
         _filesAction = filesAction;
+        _logger = logger;
         _maxBatchItem = maxBatchItem;
         _queue = [];
         _timer = new ConcurrentTimer(batchExecutionInterval)
@@ -34,6 +39,7 @@ internal sealed class FileEventBatchProcessor : IDisposable
     {
         _queue.Enqueue(model);
         _timer.Start();
+        _logger.LogDebug($"The file is in queue.", model.FileName);
     }
 
     private void OnTimerElapsed(object? sender, ElapsedEventArgs e)

@@ -7,40 +7,40 @@ using System.Windows;
 
 namespace Glouton.Features.Loging;
 
-internal sealed class LoggingService : ILoggingService
+internal sealed class AppLogger : ILoggingService
 {
     private readonly ConcurrentQueue<LogEntry> _entries;
 
     public event EventHandler<LogEntryEventArgs>? LogEntryAdded;
 
-    public LoggingService()
+    public AppLogger()
     {
         _entries = [];
     }
 
-    public void LogInfo(string message)
+    public void LogInfo(string message, string fileName = "")
     {
-        AddLog(LogLevel.Information, message);
+        AddLog(LogLevel.Information, message, fileName);
     }
 
-    public void LogWarning(string message)
+    public void LogWarning(string message, string fileName = "")
     {
-        AddLog(LogLevel.Warning, message);
+        AddLog(LogLevel.Warning, message, fileName);
     }
 
-    public void LogError(string message)
+    public void LogError(string message, string fileName = "")
     {
-        AddLog(LogLevel.Error, message);
+        AddLog(LogLevel.Error, message, fileName);
     }
 
-    public void LogDebug(string message)
+    public void LogDebug(string message, string fileName = "")
     {
-        AddLog(LogLevel.Debug, message);
+        AddLog(LogLevel.Debug, message, fileName);
     }
 
-    private void AddLog(LogLevel level, string message)
+    private void AddLog(LogLevel level, string message, string fileName = "")
     {
-        LogEntry entry = new(level, message);
+        LogEntry entry = new(level, message, fileName);
         _entries.Enqueue(entry);
 
         Application.Current?.Dispatcher.BeginInvoke(() =>

@@ -33,7 +33,7 @@ public partial class App : Application
 
                 services.AddSingleton<IFileEventDispatcher, FileEventDispatcher>();
                 services.AddSingleton<IFileWatcherService, FileWatcherService>();
-                services.AddSingleton<ILoggingService, LoggingService>();
+                services.AddSingleton<ILoggingService, AppLogger>();
             })
             .Build();
     }

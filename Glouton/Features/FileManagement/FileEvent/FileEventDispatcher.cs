@@ -12,12 +12,15 @@ namespace Glouton.Features.FileManagement.FileEvent;
 
 internal sealed class FileEventDispatcher : IFileEventDispatcher, IDisposable
 {
+    private readonly ILoggingService _logger;
+
     private bool _disposedValue;
     private readonly FileEventBatchProcessor _batchProcessor;
 
-    public FileEventDispatcher()
+    public FileEventDispatcher(ILoggingService logger)
     {
-        _batchProcessor = new FileEventBatchProcessor(filesAction: Invoke, SettingsCST.BATCH_EXECUTION_INTERVAL, SettingsCST.MAX_BATCH_ITEM);
+        _logger = logger;
+        _batchProcessor = new FileEventBatchProcessor(filesAction: Invoke, _logger, SettingsCST.BATCH_EXECUTION_INTERVAL, SettingsCST.MAX_BATCH_ITEM);
     }
 
     private void Invoke(List<FileEventActionModel> actions)
@@ -30,14 +33,18 @@ internal sealed class FileEventDispatcher : IFileEventDispatcher, IDisposable
         if (actions.Count == 1)
         {
             this.Invoke(actions.First(), ParallelTaskScheduler.Current);
+            LogAction(actions.First());
         }
         else
         {
             for (var index = 0; index < actions.Count - 1; index++)
             {
                 this.Invoke(actions[index], SingleTaskScheduler.Current);
+                LogAction(actions[index]);
             }
         }
+
+        void LogAction(FileEventActionModel action)=> _logger.LogInfo($"The file has been processed.", action.FileName);
     }
 
     private Task Invoke(FileEventActionModel model, TaskScheduler taskScheduler)

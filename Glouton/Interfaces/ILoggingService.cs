@@ -7,10 +7,10 @@ namespace Glouton.Interfaces;
 public interface ILoggingService
 {
     event EventHandler<LogEntryEventArgs>? LogEntryAdded;
-    void LogInfo(string message);
-    void LogWarning(string message);
-    void LogError(string message);
-    void LogDebug(string message);
+    void LogInfo(string message, string fileName = "");
+    void LogWarning(string message, string fileName = "");
+    void LogError(string message, string fileName = "");
+    void LogDebug(string message, string fileName = "");
     IEnumerable<LogEntry> GetAllLogs();
     void ClearLogs();
 }
