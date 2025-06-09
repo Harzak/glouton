@@ -6,16 +6,14 @@ namespace Glouton.Features.FileManagement.FileEvent;
 
 internal sealed class FileEventActionModel 
 {
-    public Guid Id { get; set; }
+    public required Guid Id { get; set; }
     public FileSystemEventArgs? EventArgs { get; set; }
     public string FileName => this.EventArgs?.Name ?? "<None>"; 
-    public Action Action { get; set; }
+    public required Action Action { get; set; }
     public CancellationToken CancellationToken { get; set; }
 
-    public FileEventActionModel(Guid id, Action action, CancellationToken cancellationToken)
+    public FileEventActionModel(CancellationToken cancellationToken)
     {
-        Id = id;
-        Action = action;
         CancellationToken = cancellationToken;
     }
 }

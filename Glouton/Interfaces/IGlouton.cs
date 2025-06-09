@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Glouton.Interfaces;
 
 public interface IGlouton : IDisposable
 {
+    int HungerLevel { get; set; }
+
+    event EventHandler? HungerLevelChanged;
+
     void WakeUp();
 }
-

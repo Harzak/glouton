@@ -44,7 +44,7 @@ internal sealed class FileEventDispatcher : IFileEventDispatcher, IDisposable
             }
         }
 
-        void LogAction(FileEventActionModel action)=> _logger.LogInfo($"The file has been processed.", action.FileName);
+        void LogAction(FileEventActionModel action) => _logger.LogInfo($"The file has been processed.", action.FileName);
     }
 
     private Task Invoke(FileEventActionModel model, TaskScheduler taskScheduler)
@@ -54,8 +54,10 @@ internal sealed class FileEventDispatcher : IFileEventDispatcher, IDisposable
 
     public void BeginInvoke(FileSystemEventArgs args, Action action, CancellationToken cancellationToken = default)
     {
-        FileEventActionModel actionInvoker = new(id: Guid.NewGuid(), action, cancellationToken)
+        FileEventActionModel actionInvoker = new(cancellationToken)
         {
+            Action = action,
+            Id = Guid.NewGuid(),
             EventArgs = args
         };
         this.BeginInvokeInner(() => _batchProcessor.Enqueue(actionInvoker), cancellationToken);

@@ -4,3 +4,5 @@
 // a specific target and scoped to a namespace, type, member, etc.
 
 using System.Diagnostics.CodeAnalysis;
+[assembly: SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>", Scope = "member", Target = "~F:Glouton.Features.Glouton.GloutonTaste.FAVORITE_FOOD")]
+[assembly: SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>", Scope = "member", Target = "~F:Glouton.Features.Glouton.GloutonTaste.HATED_FOOD")]

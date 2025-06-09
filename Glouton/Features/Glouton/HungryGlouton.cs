@@ -15,9 +15,11 @@ internal sealed class HungryGlouton : IGlouton
     private IFileSystemDeletionFactory _deletionFactory;
     private ILoggingService _logger;
 
-    public string? HungerLevel { get; set; }
+    private Stomach _stomach;
 
-    //public event EventHandler? HungerLevelChanged;
+    public int HungerLevel { get; set; }
+
+    public event EventHandler? HungerLevelChanged;
 
     public HungryGlouton(IFileWatcherService watcher,
         IFileSystemDeletionFactory deletionFactory,
@@ -26,12 +28,15 @@ internal sealed class HungryGlouton : IGlouton
         _watcher = watcher;
         _deletionFactory = deletionFactory;
         _logger = logger;
+        _stomach = new Stomach();
+        HungerLevel = 50;
     }
 
     public void WakeUp()
     {
         _watcher.Start(@"C:\Users\Aurelien\Desktop\glouton");
         _watcher.Created += OnFileCreated;
+        _stomach.FoodDigested +=OnFoodDigested;
     }
 
     private void OnFileCreated(object sender, FileSystemEventArgs e)
@@ -46,6 +51,11 @@ internal sealed class HungryGlouton : IGlouton
         if (result.IsSuccess)
         {
             _logger.LogInfo($"Glouton ate the file: {path}");
+            _stomach.AddFood(new Food()
+            {
+                Extension = Path.GetExtension(path),
+                FullPath = path
+            });
         }
         else
         {
@@ -55,6 +65,22 @@ internal sealed class HungryGlouton : IGlouton
                 _logger.LogError(result.ErrorMessage);
             }
         }
+    }
+
+    private void OnFoodDigested(object? sender, DigestionEventArgs e)
+    {
+        switch (e.Tasting)
+        {
+            case GloutonAppreciation.Wonderful:
+                HungerLevel += 10;
+                break;
+            case GloutonAppreciation.Awful:
+                HungerLevel -= 10;
+                break;
+            default:
+                break;
+        }
+        HungerLevelChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public void Dispose()

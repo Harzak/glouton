@@ -40,7 +40,12 @@ internal sealed class AppLogger : ILoggingService
 
     private void AddLog(LogLevel level, string message, string fileName = "")
     {
-        LogEntry entry = new(level, message, fileName);
+        LogEntry entry = new()
+        {
+            Level = level,
+            Message = message,
+            FileName = fileName
+        };
         _entries.Enqueue(entry);
 
         Application.Current?.Dispatcher.BeginInvoke(() =>

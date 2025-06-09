@@ -13,15 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Ressources\bad.bmp" />
-    <None Remove="Ressources\good.bmp" />
-    <None Remove="Ressources\ok.bmp" />
-    <None Remove="Ressources\very-bad.bmp" />
-    <None Remove="Ressources\very-good.bmp" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Ressources\very-good.bmp" />
+    <Resource Include="Ressources\4.bmp" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,10 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Ressources\bad.bmp" />
-    <Resource Include="Ressources\good.bmp" />
-    <Resource Include="Ressources\ok.bmp" />
-    <Resource Include="Ressources\very-bad.bmp" />
+    <Resource Include="Ressources\1.bmp" />
+    <Resource Include="Ressources\3.bmp" />
+    <Resource Include="Ressources\2.bmp" />
+    <Resource Include="Ressources\0.bmp" />
   </ItemGroup>
 
 </Project>

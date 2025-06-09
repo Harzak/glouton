@@ -3,6 +3,6 @@
              mc:Ignorable="d">
     <Grid>
         <Image RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" SnapsToDevicePixels="True"
-               Source="/Ressources/very-good.bmp" />
+               Source="{Binding Image, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
     </Grid>
 </UserControl>
