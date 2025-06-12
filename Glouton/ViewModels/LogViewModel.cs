@@ -36,7 +36,7 @@ public class LogViewModel : BaseViewModel
         _searchText = string.Empty;
         _logEntries = [];
         this.FilteredLogEntries = new ObservableCollection<LogEntry>();
-        this.ClearLogsCommand = new ActionCommand(ClearLogs);
+        this.ClearLogsCommand = new ActionRelayCommand(ClearLogs);
 
         _logger.LogEntryAdded += OnLogEntryAdded;
 

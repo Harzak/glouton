@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>", Scope = "member", Target = "~F:Glouton.Features.Glouton.GloutonTaste.FAVORITE_FOOD")]
 [assembly: SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>", Scope = "member", Target = "~F:Glouton.Features.Glouton.GloutonTaste.HATED_FOOD")]
+[assembly: SuppressMessage("Performance", "CA1869:Cache and reuse 'JsonSerializerOptions' instances", Justification = "<Pending>", Scope = "member", Target = "~M:Glouton.Settings.SettingsService.SaveSettings")]

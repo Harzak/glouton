@@ -8,5 +8,6 @@ public interface IFileWatcherService : IDisposable
     event FileSystemEventHandler? Created;
     bool IsEnabled { get; }
     bool IsStarted { get; }
-    void Start(string location);
+    void StartWatcher(string location);
+    void StopWatcher();
 }

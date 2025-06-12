@@ -2,9 +2,11 @@
 using Glouton.Features.FileManagement.FileDeletion;
 using Glouton.Features.FileManagement.FileEvent;
 using Glouton.Features.FileManagement.FileWatcher;
-using Glouton.Features.Loging;
 using Glouton.Features.Glouton;
+using Glouton.Features.Loging;
+using Glouton.Features.Menu;
 using Glouton.Interfaces;
+using Glouton.Settings;
 using Glouton.ViewModels;
 using Glouton.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +35,8 @@ public partial class App : Application
                     DataContext = s.GetRequiredService<MainWindowViewModel>()
                 });
 
+                services.AddSingleton<ISettingsService, SettingsService>();
+                services.AddSingleton<IMenuCommandInvoker, MenuCommandInvoker>();
                 services.AddSingleton<IGlouton, HungryGlouton>();
                 services.AddSingleton<IFileEventDispatcher, FileEventDispatcher>();
                 services.AddSingleton<IFileWatcherService, FileWatcherService>();

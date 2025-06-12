@@ -2,11 +2,11 @@
 
 namespace Glouton.Commands;
 
-public class ActionCommand : BaseCommand
+public class ActionRelayCommand : BaseRelayCommand
 {
     private Action _action;
 
-    public ActionCommand(Action action)
+    public ActionRelayCommand(Action action)
     {
         _action = action;
     }

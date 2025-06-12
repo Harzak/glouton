@@ -1,4 +1,5 @@
 ﻿using Glouton.Interfaces;
+using Glouton.Settings;
 using Glouton.Utils.TaskScheduling;
 using System;
 using System.Collections.Generic;
@@ -6,21 +7,24 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SettingsCST = Glouton.Settings.Constants;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
 internal sealed class FileEventDispatcher : IFileEventDispatcher, IDisposable
 {
     private readonly ILoggingService _logger;
+    private readonly ISettingsService _settingsService;
 
     private bool _disposedValue;
     private readonly FileEventBatchProcessor _batchProcessor;
 
-    public FileEventDispatcher(ILoggingService logger)
+    public FileEventDispatcher(ILoggingService logger, ISettingsService settingsService)
     {
         _logger = logger;
-        _batchProcessor = new FileEventBatchProcessor(filesAction: Invoke, _logger, SettingsCST.BATCH_EXECUTION_INTERVAL, SettingsCST.MAX_BATCH_ITEM);
+        _settingsService = settingsService;
+
+        AppSettings settings = _settingsService.GetSettings();
+        _batchProcessor = new FileEventBatchProcessor(filesAction: Invoke, _logger, settings.BatchExecutionInterval, settings.MaxBatchItem);
     }
 
     private void Invoke(List<FileEventActionModel> actions)

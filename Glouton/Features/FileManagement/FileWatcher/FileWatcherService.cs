@@ -31,12 +31,25 @@ internal sealed class FileWatcherService : IFileWatcherService
         _logger = logger;
     }
 
-    public void Start(string location)
+    public void StartWatcher(string location)
     {
         if (!IsStarted)
         {
             this.Subscribe(location);
             this.IsStarted = true;
+        }
+    }
+
+    public void StopWatcher()
+    {
+        if (IsStarted)
+        {
+            _fileWatcher?.Dispose();
+            _subsriptions?.Dispose();
+            _fileWatcher = null;
+            _subsriptions = null;
+            IsStarted = false;
+            _logger.LogInfo("File watcher stopped.");
         }
     }
 
@@ -55,7 +68,7 @@ internal sealed class FileWatcherService : IFileWatcherService
         _fileWatcher.Error +=OnError;
         _fileWatcher.EnableRaisingEvents = true;
 
-        _logger.LogInfo($"File watcher started for {location}.");
+        _logger.LogInfo($"File watcher started for '{location}'.");
     }
 
     private void OnError(object sender, ErrorEventArgs e)
@@ -65,7 +78,7 @@ internal sealed class FileWatcherService : IFileWatcherService
 
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        _logger.LogInfo($"File changed ({e.ChangeType}).", e.Name ?? "");
+        _logger.LogInfo($"File {e.ChangeType}.", e.Name ?? "");
         _dispatcher.BeginInvoke(e, new Action(() =>
         {
             if ((Directory.Exists(e.FullPath) || File.Exists(e.FullPath)))
@@ -86,7 +99,7 @@ internal sealed class FileWatcherService : IFileWatcherService
                     | NotifyFilters.LastWrite
                     | NotifyFilters.DirectoryName,
                 IncludeSubdirectories = true,
-                InternalBufferSize = 64 * 1024 // max buffer size in bytes
+                InternalBufferSize = 64 * 1024 
             };
         }
         else

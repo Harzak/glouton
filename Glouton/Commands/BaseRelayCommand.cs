@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace Glouton.Commands;
 
-public abstract class BaseCommand : ICommand
+public abstract class BaseRelayCommand : ICommand
 {
 
     public event EventHandler? CanExecuteChanged
