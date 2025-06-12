@@ -10,19 +10,23 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="334" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <views:MenuView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+        <views:MenuView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
                         DataContext="{Binding MenuViewModel}" />
+
+        <views:FileWatcherControlsView Grid.Row="1" Grid.Column="2"
+                                       DataContext="{Binding WatcherControlsViewModel}" />
 
         <views:GloutonView Grid.Row="1" Grid.Column="0"
                            DataContext="{Binding GloutonViewModel}" />
 
-        <views:LogView Grid.Row="1" Grid.Column="1"
+        <views:LogView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
                        DataContext="{Binding LogViewModel}" />
     </Grid>
 

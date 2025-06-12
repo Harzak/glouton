@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="Glouton.Views.FileWatcherControlsView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Glouton.Converters" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Glouton.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodels="clr-namespace:Glouton.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:FileWatcherControlsViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800" mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <StackPanel Margin="10,5">
+        <Border Visibility="{Binding CanBeStarted, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Button Width="25" Height="25" Background="#FF4CAF50"
+                    BorderBrush="#FF388E3C" BorderThickness="2"
+                    Command="{Binding StartWatcherCommand}">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="30">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF66BB6A" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF2E7D32" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+
+                <Path Width="10" Height="10" Margin="2,0,0,0"
+                      Data="M8,5.14V19.14L19,12.14L8,5.14Z" Fill="White" Stretch="Uniform" />
+            </Button>
+        </Border>
+        <Border Visibility="{Binding CanBeStopped, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Button Width="25" Height="25" Background="#FFC62828"
+                    BorderBrush="#FFC62828" BorderThickness="2"
+                    Command="{Binding StopWatcherCommand, UpdateSourceTrigger=PropertyChanged}">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="30">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFEF5350" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFC62828" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+
+                <Rectangle Width="8" Height="8" Fill="White" />
+            </Button>
+        </Border>
+    </StackPanel>
+
+</UserControl>

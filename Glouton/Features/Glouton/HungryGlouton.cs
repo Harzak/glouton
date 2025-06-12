@@ -35,7 +35,7 @@ internal sealed class HungryGlouton : IGlouton
     public void WakeUp()
     {
         _watcher.StartWatcher(@"C:\Users\Aurelien\Desktop\glouton");
-        _watcher.Created += OnFileCreated;
+        _watcher.FileChanged += OnFileCreated;
         _stomach.FoodDigested +=OnFoodDigested;
     }
 
@@ -87,7 +87,7 @@ internal sealed class HungryGlouton : IGlouton
     {
         if (_watcher != null)
         {
-            _watcher.Created -= OnFileCreated;
+            _watcher.FileChanged -= OnFileCreated;
         }
     }
 }

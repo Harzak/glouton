@@ -16,8 +16,7 @@ public class MenuViewModel : BaseViewModel
     public ICommand SetWatcherLocationCommand { get; }
 
     public MenuViewModel(IMenuCommandInvoker commandInvoker,
-                         ISettingsService settingsService,
-                         IFileWatcherService watcherService)
+                         ISettingsService settingsService)
     {
         IMenuCommand openWatcherLocationMenuCommand = new OpenFileWatcherLocationCommand(settingsService);
         IMenuCommand setWatcherLocationMenuCommand = new SetWatcherLocationCommand(settingsService);

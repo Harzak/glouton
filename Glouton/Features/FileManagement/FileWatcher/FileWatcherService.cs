@@ -16,14 +16,10 @@ internal sealed class FileWatcherService : IFileWatcherService
     private FileSystemWatcher? _fileWatcher;
     private CompositeDisposable? _subsriptions;
 
-    public event FileSystemEventHandler? Created;
+    public event FileSystemEventHandler? FileChanged;
+    public event EventHandler<FileWatcherStateEventArgs>? StatusChanged;
 
-    public bool IsEnabled
-    {
-        get => IsStarted && _fileWatcher != null && _fileWatcher.EnableRaisingEvents;
-    }
-
-    public bool IsStarted { get; private set; }
+    public EFileWatcherState State { get; private set; }
 
     public FileWatcherService(IFileEventDispatcher dispatcher, ILoggingService logger)
     {
@@ -33,23 +29,22 @@ internal sealed class FileWatcherService : IFileWatcherService
 
     public void StartWatcher(string location)
     {
-        if (!IsStarted)
+        if (this.State != EFileWatcherState.Started)
         {
             this.Subscribe(location);
-            this.IsStarted = true;
+            this.SetState(EFileWatcherState.Started);
         }
     }
 
     public void StopWatcher()
     {
-        if (IsStarted)
+        if (this.State == EFileWatcherState.Started)
         {
             _fileWatcher?.Dispose();
             _subsriptions?.Dispose();
             _fileWatcher = null;
             _subsriptions = null;
-            IsStarted = false;
-            _logger.LogInfo("File watcher stopped.");
+            this.SetState(EFileWatcherState.Stopped);
         }
     }
 
@@ -83,7 +78,7 @@ internal sealed class FileWatcherService : IFileWatcherService
         {
             if ((Directory.Exists(e.FullPath) || File.Exists(e.FullPath)))
             {
-                Created?.Invoke(this, e);
+                FileChanged?.Invoke(this, e);
             }
         }));
     }
@@ -99,7 +94,7 @@ internal sealed class FileWatcherService : IFileWatcherService
                     | NotifyFilters.LastWrite
                     | NotifyFilters.DirectoryName,
                 IncludeSubdirectories = true,
-                InternalBufferSize = 64 * 1024 
+                InternalBufferSize = 64 * 1024
             };
         }
         else
@@ -108,9 +103,27 @@ internal sealed class FileWatcherService : IFileWatcherService
         }
     }
 
+    private void SetState(EFileWatcherState state)
+    {
+        if (this.State != state)
+        {
+            State = state;
+            StatusChanged?.Invoke(this, new FileWatcherStateEventArgs(state));
+            _logger.LogInfo($"File watcher is now {state}.");
+        }
+    }
+
     public void Dispose()
     {
         _fileWatcher?.Dispose();
         _subsriptions?.Dispose();
     }
+}
+
+public enum EFileWatcherState
+{
+    Unknown = 0,
+    Enabled = 1,
+    Started = 2,
+    Stopped = 3
 }
