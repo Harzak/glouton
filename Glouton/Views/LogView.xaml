@@ -41,7 +41,7 @@
                 <DataGridTextColumn Width="80"
                                     Binding="{Binding Timestamp, StringFormat='HH:mm:ss.fff'}"
                                     Header="Time" />
-                <DataGridTextColumn Width="160"
+                <DataGridTextColumn Width="300"
                                     Binding="{Binding FileName}"
                                     Header="FileName">
                     <DataGridTextColumn.ElementStyle>

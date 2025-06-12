@@ -63,7 +63,7 @@ internal sealed class FileWatcherService : IFileWatcherService
         _fileWatcher.Error +=OnError;
         _fileWatcher.EnableRaisingEvents = true;
 
-        _logger.LogInfo($"File watcher started for '{location}'.");
+        _logger.LogInfo($"File watcher monitors: '{location}'.");
     }
 
     private void OnError(object sender, ErrorEventArgs e)
