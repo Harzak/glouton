@@ -25,7 +25,7 @@ public abstract class BaseResult
         }
     }
 
-    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);    
+    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
     public string ErrorMessage { get; set; }
 

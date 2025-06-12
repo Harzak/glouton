@@ -18,7 +18,8 @@ public partial class MainWindow : Window
     private void SetMenuDirection()
     {
         FieldInfo? menuDropAlignmentField = typeof(SystemParameters).GetField("_menuDropAlignment", BindingFlags.NonPublic | BindingFlags.Static);
-        Action setAlignmentValue = () => {
+        Action setAlignmentValue = () =>
+        {
             if (SystemParameters.MenuDropAlignment && menuDropAlignmentField != null) menuDropAlignmentField.SetValue(null, false);
         };
         setAlignmentValue();

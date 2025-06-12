@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Glouton.Features.Glouton;
+﻿namespace Glouton.Features.Glouton;
 
 public static class GloutonTaste
 {
@@ -28,29 +22,29 @@ public static class GloutonTaste
         ".cpp",
         ".h",
         ".bat",
-        ".sh"     
+        ".sh"
     };
 
     public static string[] HATED_FOOD = {
-        ".exe",  
-        ".dll",  
-        ".pdf",  
-        ".jpg",  
-        ".png",  
-        ".gif",  
-        ".zip",  
-        ".rar",  
-        ".mp3",  
-        ".mp4",  
-        ".avi",  
-        ".doc",  
-        ".docx", 
-        ".xls",  
-        ".xlsx", 
-        ".ppt",  
-        ".pptx", 
-        ".bin",  
-        ".iso",  
-        ".msi"   
+        ".exe",
+        ".dll",
+        ".pdf",
+        ".jpg",
+        ".png",
+        ".gif",
+        ".zip",
+        ".rar",
+        ".mp3",
+        ".mp4",
+        ".avi",
+        ".doc",
+        ".docx",
+        ".xls",
+        ".xlsx",
+        ".ppt",
+        ".pptx",
+        ".bin",
+        ".iso",
+        ".msi"
     };
 }

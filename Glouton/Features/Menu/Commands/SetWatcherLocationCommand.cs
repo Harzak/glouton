@@ -1,12 +1,7 @@
 ﻿using Glouton.Interfaces;
-using Glouton.Settings;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Glouton.Features.Menu.Commands;
 

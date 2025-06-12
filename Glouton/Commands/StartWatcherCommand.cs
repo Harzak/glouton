@@ -11,7 +11,7 @@ public class StartWatcherCommand : BaseRelayCommand
     public StartWatcherCommand(IFileWatcherService fileWatcherService, ISettingsService settingsService)
     {
         _fileWatcherService = fileWatcherService;
-    _settingsService = settingsService;
+        _settingsService = settingsService;
     }
 
     public override bool CanExecute(object? parameter)

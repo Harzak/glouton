@@ -1,7 +1,5 @@
-﻿using Glouton.Features.FileManagement.FileEvent;
-using Glouton.Interfaces;
+﻿using Glouton.Interfaces;
 using System;
-using System.CodeDom;
 using System.IO;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;

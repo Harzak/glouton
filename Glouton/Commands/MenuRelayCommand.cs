@@ -1,5 +1,4 @@
-﻿using Glouton.Features.Menu;
-using Glouton.Interfaces;
+﻿using Glouton.Interfaces;
 
 namespace Glouton.Commands;
 

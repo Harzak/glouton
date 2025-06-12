@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Glouton.Interfaces;
+using Glouton.Utils.Time;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Timers;
-using Glouton.Interfaces;
-using Glouton.Utils.Time;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
@@ -12,7 +12,7 @@ namespace Glouton.Features.FileManagement.FileEvent;
 /// </summary>
 internal sealed class FileEventBatchProcessor : IDisposable
 {
-    private readonly ILoggingService _logger;   
+    private readonly ILoggingService _logger;
 
     private readonly int _maxBatchItem;
     private readonly ConcurrentQueue<FileEventActionModel> _queue;
@@ -53,7 +53,7 @@ internal sealed class FileEventBatchProcessor : IDisposable
         }
 
         _filesAction.Invoke(list);
-    }   
+    }
 
     public void Dispose()
     {

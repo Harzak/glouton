@@ -4,7 +4,7 @@ namespace Glouton.Commands;
 
 public class ActionRelayCommand : BaseRelayCommand
 {
-    private Action _action;
+    private readonly Action _action;
 
     public ActionRelayCommand(Action action)
     {

@@ -13,7 +13,7 @@ public class LogViewModel : BaseViewModel
 {
     private readonly ILoggingService _logger;
     private string _searchText;
-    private List<LogEntry> _logEntries;
+    private readonly List<LogEntry> _logEntries;
 
     public ObservableCollection<LogEntry> FilteredLogEntries { get; }
 

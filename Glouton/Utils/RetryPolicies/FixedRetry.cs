@@ -1,9 +1,5 @@
 ﻿using Glouton.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Glouton.Utils.RetryPolicies;
 
@@ -20,6 +16,6 @@ internal class FixedRetry : IRetryPolicy
 
     public TimeSpan GetNextRetryDelay(int attempt)
     {
-        return attempt < this.MaxAttemps ? _delay : TimeSpan.Zero; 
+        return attempt < this.MaxAttemps ? _delay : TimeSpan.Zero;
     }
 }

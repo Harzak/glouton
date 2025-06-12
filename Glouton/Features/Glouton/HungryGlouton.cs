@@ -1,21 +1,19 @@
 ﻿using Glouton.Interfaces;
 using Glouton.Utils.Result;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Glouton.Features.Glouton;
 
 internal sealed class HungryGlouton : IGlouton
 {
-    private IFileWatcherService _watcher;
-    private IFileSystemDeletionFactory _deletionFactory;
-    private ILoggingService _logger;
+    private readonly IFileWatcherService _watcher;
+    private readonly IFileSystemDeletionFactory _deletionFactory;
+    private readonly ISettingsService _settingsService;
+    private readonly ILoggingService _logger;
 
-    private Stomach _stomach;
+    private readonly Stomach _stomach;
 
     public int HungerLevel { get; set; }
 
@@ -23,20 +21,22 @@ internal sealed class HungryGlouton : IGlouton
 
     public HungryGlouton(IFileWatcherService watcher,
         IFileSystemDeletionFactory deletionFactory,
+        ISettingsService settingsService,
         ILoggingService logger)
     {
         _watcher = watcher;
         _deletionFactory = deletionFactory;
+        _settingsService = settingsService;
         _logger = logger;
         _stomach = new Stomach();
-        HungerLevel = 50;
+        this.HungerLevel = 50;
     }
 
     public void WakeUp()
     {
-        _watcher.StartWatcher(@"C:\Users\Aurelien\Desktop\glouton");
+        _watcher.StartWatcher(_settingsService.GetSettings().WatchedFilePath);
         _watcher.FileChanged += OnFileCreated;
-        _stomach.FoodDigested +=OnFoodDigested;
+        _stomach.FoodDigested += OnFoodDigested;
     }
 
     private void OnFileCreated(object sender, FileSystemEventArgs e)
@@ -91,4 +91,3 @@ internal sealed class HungryGlouton : IGlouton
         }
     }
 }
-
