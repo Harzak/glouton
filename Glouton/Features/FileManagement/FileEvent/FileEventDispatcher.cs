@@ -10,21 +10,30 @@ using System.Threading.Tasks;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
-internal sealed class FileEventDispatcher : IFileEventDispatcher, IDisposable
+internal sealed class FileEventDispatcher : IFileEventDispatcher
 {
     private readonly ILoggingService _logger;
-    private readonly ISettingsService _settingsService;
 
     private bool _disposedValue;
-    private readonly FileEventBatchProcessor _batchProcessor;
+    private readonly IFileEventBatchProcessor _batchProcessor;
 
-    public FileEventDispatcher(ILoggingService logger, ISettingsService settingsService)
+    public FileEventDispatcher(IFileEventBatchProcessor batchProcessor, ILoggingService logger)
     {
+        _batchProcessor = batchProcessor;
         _logger = logger;
-        _settingsService = settingsService;
 
-        AppSettings settings = _settingsService.GetSettings();
-        _batchProcessor = new FileEventBatchProcessor(filesAction: Invoke, _logger, settings.BatchExecutionInterval, settings.MaxBatchItem);
+        _batchProcessor.Initialize(Invoke);
+    }
+
+    public void BeginInvoke(FileSystemEventArgs args, Action action, CancellationToken cancellationToken = default)
+    {
+        FileEventActionModel actionInvoker = new(cancellationToken)
+        {
+            Action = action,
+            Id = Guid.NewGuid(),
+            EventArgs = args
+        };
+        this.BeginInvokeInner(() => _batchProcessor.Enqueue(actionInvoker), cancellationToken);
     }
 
     private void Invoke(List<FileEventActionModel> actions)
@@ -54,17 +63,6 @@ internal sealed class FileEventDispatcher : IFileEventDispatcher, IDisposable
     private Task Invoke(FileEventActionModel model, TaskScheduler taskScheduler)
     {
         return Task.Factory.StartNew(model.Action, model.CancellationToken, TaskCreationOptions.None, taskScheduler);
-    }
-
-    public void BeginInvoke(FileSystemEventArgs args, Action action, CancellationToken cancellationToken = default)
-    {
-        FileEventActionModel actionInvoker = new(cancellationToken)
-        {
-            Action = action,
-            Id = Guid.NewGuid(),
-            EventArgs = args
-        };
-        this.BeginInvokeInner(() => _batchProcessor.Enqueue(actionInvoker), cancellationToken);
     }
 
     private void BeginInvokeInner(Action action, CancellationToken cancellationToken = default)

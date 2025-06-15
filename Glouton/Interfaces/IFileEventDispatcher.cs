@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Glouton.Interfaces;
 
-public interface IFileEventDispatcher
+public interface IFileEventDispatcher : IDisposable
 {
     void BeginInvoke(FileSystemEventArgs args, Action action, CancellationToken cancellationToken = default);
 }

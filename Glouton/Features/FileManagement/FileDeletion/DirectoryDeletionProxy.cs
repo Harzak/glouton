@@ -2,7 +2,7 @@
 using System.IO;
 
 namespace Glouton.Features.FileManagement.FileDeletion;
-internal class DirectoryDeletionProxy : IFileSystemDeletionProxy
+internal class DirectoryDeletionProxy : IDirectoryDeletionProxy
 {
     public void Delete(string path)
     {
@@ -10,4 +10,8 @@ internal class DirectoryDeletionProxy : IFileSystemDeletionProxy
         Directory.Delete(path);
     }
     public bool Exists(string path) => Directory.Exists(path);
+
+    public string[] GetDirectories(string path) => Directory.GetDirectories(path);
+
+    public string[] GetFiles(string path) => Directory.GetFiles(path);
 }

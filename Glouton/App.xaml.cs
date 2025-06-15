@@ -7,6 +7,7 @@ using Glouton.Features.Loging;
 using Glouton.Features.Menu;
 using Glouton.Interfaces;
 using Glouton.Settings;
+using Glouton.Utils.Time;
 using Glouton.ViewModels;
 using Glouton.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,12 +35,20 @@ public partial class App : Application
                 });
 
                 services.AddSingleton<ISettingsService, SettingsService>();
-                services.AddSingleton<IMenuCommandInvoker, MenuCommandInvoker>();
-                services.AddSingleton<IGlouton, HungryGlouton>();
+                services.Configure<BatchTimerSettings>(hostContext.Configuration.GetSection("BatchTimerSettings"));
+                var e = hostContext.Configuration.GetSection("BatchSettings");
+                services.Configure<BatchSettings>(hostContext.Configuration.GetSection("BatchSettings"));
+
+                services.AddSingleton<IFileEventBatchProcessor, FileEventBatchProcessor>();
                 services.AddSingleton<IFileEventDispatcher, FileEventDispatcher>();
-                services.AddSingleton<IFileWatcherService, FileWatcherService>();
-                services.AddSingleton<ILoggingService, AppLogger>();
                 services.AddSingleton<IFileSystemDeletionFactory, FileSystemDeletionFactory>();
+                services.AddSingleton<IFileWatcherService, FileWatcherService>();
+
+                services.AddSingleton<ITimer, ConcurrentTimer>();
+                services.AddSingleton<IMenuCommandInvoker, MenuCommandInvoker>();
+                services.AddSingleton<ILoggingService, AppLogger>();
+
+                services.AddSingleton<IGlouton, HungryGlouton>();
             })
             .Build();
     }

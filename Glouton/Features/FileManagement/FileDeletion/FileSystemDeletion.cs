@@ -3,18 +3,21 @@ using Glouton.Utils.Result;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+
+[assembly: InternalsVisibleTo("Glouton.Tests")]
 
 namespace Glouton.Features.FileManagement.FileDeletion;
 
-internal class FileSystemDeletion : IFileSystemDeletion
+internal sealed class FileSystemDeletion : IFileSystemDeletion
 {
     private readonly IFileSystemDeletionProxy _fileDeletion;
-    private readonly IFileSystemDeletionProxy _directoryDeletion;
+    private readonly IDirectoryDeletionProxy _directoryDeletion;
     private readonly IRetryPolicy _retryPolicy;
     private readonly OperationResult _result;
 
-    public FileSystemDeletion(IFileSystemDeletionProxy fileDeletion, IFileSystemDeletionProxy directoryDeletion, IRetryPolicy retryPolicy)
+    public FileSystemDeletion(IFileSystemDeletionProxy fileDeletion, IDirectoryDeletionProxy directoryDeletion, IRetryPolicy retryPolicy)
     {
         _fileDeletion = fileDeletion;
         _directoryDeletion = directoryDeletion;
@@ -30,11 +33,11 @@ internal class FileSystemDeletion : IFileSystemDeletion
             return _result.WithError("Deletion attempt failed: file is empty.");
         }
 
-        if (File.Exists(path))
+        if (_fileDeletion.Exists(path))
         {
             await TryDeleteAsFileAsync(path).ConfigureAwait(false);
         }
-        else if (Directory.Exists(path))
+        else if (_directoryDeletion.Exists(path))
         {
             await TryDeleteAsDirectoryAsync(path).ConfigureAwait(false);
         }
@@ -47,30 +50,30 @@ internal class FileSystemDeletion : IFileSystemDeletion
 
     private async Task TryDeleteAsFileAsync(string path)
     {
+        OperationResult retryResult = new OperationResult();
         for (int attempt = 0; attempt < _retryPolicy.MaxAttemps; attempt++)
         {
-            OperationResult result = this.DeleteFileSystemEntry(path, _fileDeletion);
+            retryResult = this.DeleteFileSystemEntry(path, _fileDeletion);
 
-            if (result.IsSuccess)
-            {
-                _result.WithSuccess();
-                return;
-            }
-            else
+            if (retryResult.IsFailed)
             {
                 TimeSpan delay = _retryPolicy.GetNextRetryDelay(attempt);
                 await Task.Delay(delay).ConfigureAwait(false);
             }
+            else
+            {
+                break;
+            }
         }
-        _result.WithError($"Deletion failed after {_retryPolicy.MaxAttemps} attempts for {path}.");
+        _result.Affect(retryResult);
     }
 
     private async Task TryDeleteAsDirectoryAsync(string path)
     {
-        string[] nesteadDirectories = Directory.GetDirectories(path);
-        string[] files = Directory.GetFiles(path);
+        string[] nestedDirectories = _directoryDeletion.GetDirectories(path);
+        string[] files = _directoryDeletion.GetFiles(path);
 
-        if (files != null && files.Length == 0)
+        if (files != null && files.Length > 0)
         {
             foreach (string file in files.Where(x => x != null))
             {
@@ -78,29 +81,30 @@ internal class FileSystemDeletion : IFileSystemDeletion
             }
         }
 
-        if (nesteadDirectories != null && nesteadDirectories.Length == 0)
+        if (nestedDirectories != null && nestedDirectories.Length > 0)
         {
-            foreach (var nesteadDirectory in nesteadDirectories.Where(x => x != null))
+            foreach (var nesteadDirectory in nestedDirectories.Where(x => x != null))
             {
                 await TryDeleteAsDirectoryAsync(nesteadDirectory).ConfigureAwait(false);
             }
         }
 
+        OperationResult retryResult = new OperationResult();
         for (int attempt = 0; attempt < _retryPolicy.MaxAttemps; attempt++)
         {
-            OperationResult result = this.DeleteFileSystemEntry(path, _directoryDeletion);
+            retryResult = this.DeleteFileSystemEntry(path, _directoryDeletion);
 
-            if (result.IsSuccess)
-            {
-                _result.WithSuccess();
-                return;
-            }
-            else
+            if (retryResult.IsFailed)
             {
                 TimeSpan delay = _retryPolicy.GetNextRetryDelay(attempt);
                 await Task.Delay(delay).ConfigureAwait(false);
             }
+            else
+            {
+                break;
+            }
         }
+        _result.Affect(retryResult);
     }
 
     private OperationResult DeleteFileSystemEntry(string path, IFileSystemDeletionProxy deletionProxy)

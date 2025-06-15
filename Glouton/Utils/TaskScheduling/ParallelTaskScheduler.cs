@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Glouton.Utils.TaskScheduling;
 
@@ -6,9 +7,9 @@ internal sealed class ParallelTaskScheduler : BaseTaskScheduler
 {
     private static TaskScheduler? _inner;
 
-    public static new TaskScheduler Current => _inner ??= new ParallelTaskScheduler();
+    internal static new TaskScheduler Current => _inner ??= new ParallelTaskScheduler();
 
-    private ParallelTaskScheduler()
+    internal ParallelTaskScheduler()
         : base(maxConcurrencyLevel: 5)
     {
 

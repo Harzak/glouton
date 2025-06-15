@@ -1,35 +1,35 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using Glouton.Interfaces;
+using Glouton.Settings;
+using Microsoft.Extensions.Options;
+using System;
 using System.Timers;
-
-[assembly: InternalsVisibleTo("Glouton.Tests")]
 
 namespace Glouton.Utils.Time;
 
 /// <summary>
 /// Thread-safe timer with end-action
 /// </summary>
-internal sealed class ConcurrentTimer : IDisposable
+internal sealed class ConcurrentTimer : ITimer
 {
     private readonly object _lock;
     private bool _isStarted;
-
     private readonly Timer _timer;
 
     public event ElapsedEventHandler? Elapsed;
-    public Func<bool>? RunUntil;
 
-    internal ConcurrentTimer(double interval, bool autoReset = true)
+    public Func<bool>? RunUntil { get; set; }
+
+    public ConcurrentTimer(IOptions<BatchTimerSettings> options)
     {
         _lock = new object();
-        _timer = new Timer(interval)
+        _timer = new Timer(options.Value.IntervalMs)
         {
-            AutoReset = autoReset
+            AutoReset = options.Value.AutoReset
         };
         _timer.Elapsed += OnTimerElapsed;
     }
 
-    public ConcurrentTimer Start()
+    public ITimer StartTimer()
     {
         lock (_lock)
         {
@@ -42,7 +42,7 @@ internal sealed class ConcurrentTimer : IDisposable
         return this;
     }
 
-    public void Stop()
+    public void StopTimer()
     {
         lock (_lock)
         {
@@ -58,7 +58,7 @@ internal sealed class ConcurrentTimer : IDisposable
     {
         if (this.RunUntil != null && this.RunUntil.Invoke())
         {
-            this.Stop();
+            this.StopTimer();
             return;
         }
 
@@ -67,7 +67,7 @@ internal sealed class ConcurrentTimer : IDisposable
 
     public void Dispose()
     {
-        Stop();
+        StopTimer();
         _timer?.Dispose();
     }
 }

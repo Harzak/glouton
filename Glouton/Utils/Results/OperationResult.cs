@@ -1,4 +1,5 @@
 ﻿using Glouton.Utils.Results;
+using System;
 
 namespace Glouton.Utils.Result;
 
@@ -30,5 +31,13 @@ public class OperationResult : BaseResult
     {
         base.ErrorMessage = message;
         return this.WithFailure();
+    }
+
+    public void Affect(OperationResult result)
+    {
+        ArgumentNullException.ThrowIfNull(result, nameof(result));
+        this.IsSuccess = result.IsSuccess;
+        this.ErrorMessage = result.ErrorMessage;    
+        this.ErrorCode = result.ErrorCode;  
     }
 }

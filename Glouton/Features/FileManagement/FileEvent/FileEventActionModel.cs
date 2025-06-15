@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
-internal sealed class FileEventActionModel
+public sealed class FileEventActionModel
 {
     public required Guid Id { get; set; }
     public FileSystemEventArgs? EventArgs { get; set; }
