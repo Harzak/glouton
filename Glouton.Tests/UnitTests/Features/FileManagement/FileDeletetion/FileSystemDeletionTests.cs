@@ -4,7 +4,7 @@ using Glouton.Features.FileManagement.FileDeletion;
 using Glouton.Interfaces;
 using Glouton.Utils.Result;
 
-namespace Glouton.Tests.Features.FileManagement.FileDeletetion;
+namespace Glouton.Tests.UnitTests.Features.FileManagement.FileDeletetion;
 
 [TestClass]
 public class FileSystemDeletionTests

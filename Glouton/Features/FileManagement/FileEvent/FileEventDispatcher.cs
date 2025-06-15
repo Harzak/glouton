@@ -12,9 +12,8 @@ namespace Glouton.Features.FileManagement.FileEvent;
 
 internal sealed class FileEventDispatcher : IFileEventDispatcher
 {
-    private readonly ILoggingService _logger;
-
     private bool _disposedValue;
+    private readonly ILoggingService _logger;
     private readonly IFileEventBatchProcessor _batchProcessor;
 
     public FileEventDispatcher(IFileEventBatchProcessor batchProcessor, ILoggingService logger)

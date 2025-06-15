@@ -74,7 +74,7 @@ internal sealed class FileWatcherService : IFileWatcherService
         _logger.LogInfo($"File {e.ChangeType}.", e.Name ?? "");
         _dispatcher.BeginInvoke(e, new Action(() =>
         {
-            if ((Directory.Exists(e.FullPath) || File.Exists(e.FullPath)))
+            if (Directory.Exists(e.FullPath) || File.Exists(e.FullPath))
             {
                 FileChanged?.Invoke(this, e);
             }
@@ -88,10 +88,8 @@ internal sealed class FileWatcherService : IFileWatcherService
             return new FileSystemWatcher(folder)
             {
                 Filter = "*.*",
-                NotifyFilter = NotifyFilters.FileName
-                    | NotifyFilters.LastWrite
-                    | NotifyFilters.DirectoryName,
-                IncludeSubdirectories = true,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.DirectoryName,
+                IncludeSubdirectories = true, 
                 InternalBufferSize = 64 * 1024
             };
         }

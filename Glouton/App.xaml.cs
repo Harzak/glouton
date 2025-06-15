@@ -36,7 +36,6 @@ public partial class App : Application
 
                 services.AddSingleton<ISettingsService, SettingsService>();
                 services.Configure<BatchTimerSettings>(hostContext.Configuration.GetSection("BatchTimerSettings"));
-                var e = hostContext.Configuration.GetSection("BatchSettings");
                 services.Configure<BatchSettings>(hostContext.Configuration.GetSection("BatchSettings"));
 
                 services.AddSingleton<IFileEventBatchProcessor, FileEventBatchProcessor>();

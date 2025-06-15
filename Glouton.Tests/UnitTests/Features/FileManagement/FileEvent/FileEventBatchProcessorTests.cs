@@ -2,9 +2,11 @@
 using FluentAssertions;
 using Glouton.Features.FileManagement.FileEvent;
 using Glouton.Interfaces;
+using Glouton.Settings;
+using Microsoft.Extensions.Options;
 using System.Timers;
 
-namespace Glouton.Tests.Features.FileManagement.FileEvent;
+namespace Glouton.Tests.UnitTests.Features.FileManagement.FileEvent;
 
 [TestClass]
 public class FileEventBatchProcessorTests
@@ -24,10 +26,11 @@ public class FileEventBatchProcessorTests
     {
         //Arrange
         bool isProcessed = false;
-        var proc = new FileEventBatchProcessor((model) => { isProcessed = true; }, maxBatchItem: 1, _loggingService, _timer);
-        FileEventActionModel model = CreateFileEventActionModel();
+        var proc = new FileEventBatchProcessor(TestsUtils.CreateBatchSettings(maxItems: 1), _loggingService, _timer);
+        FileEventActionModel model = TestsUtils.CreateFileEventActionModel();
 
         //Act
+        proc.Initialize((models) => { isProcessed = true; });
         proc.Enqueue(model);
         _timer.Elapsed += Raise.FreeForm<ElapsedEventHandler>.With(_timer, null);
 
@@ -42,10 +45,12 @@ public class FileEventBatchProcessorTests
         int batchNumber = 10;
         int maxBatchItem = 2;
         int batchCount = 0;
-        var proc = new FileEventBatchProcessor((model) => { batchCount++; }, maxBatchItem, _loggingService, _timer);
-        IEnumerable<FileEventActionModel> models = CreateMultipleFileEventActionMode(batchNumber * maxBatchItem);
+
+        var proc = new FileEventBatchProcessor(TestsUtils.CreateBatchSettings(maxItems: maxBatchItem), _loggingService, _timer);
+        IEnumerable<FileEventActionModel> models = TestsUtils.CreateMultipleFileEventActionMode(batchNumber * maxBatchItem);
 
         //Act
+        proc.Initialize((models) => { batchCount++; });
         for (int i = 0; i < models.Count(); i++)
         {
             proc.Enqueue(models.ElementAt(i));
@@ -64,10 +69,11 @@ public class FileEventBatchProcessorTests
     {
         //Arrange
         int nbItem = 10;
-        var proc = new FileEventBatchProcessor((model) => { },  maxBatchItem:1, _loggingService, _timer);
-        IEnumerable<FileEventActionModel> models = CreateMultipleFileEventActionMode(nbItem);
+        var proc = new FileEventBatchProcessor(TestsUtils.CreateBatchSettings(maxItems: nbItem), _loggingService, _timer);
+        IEnumerable<FileEventActionModel> models = TestsUtils.CreateMultipleFileEventActionMode(nbItem);
 
         //Act
+        proc.Initialize((models) => { });
         for (int i = 0; i < models.Count(); i++)
         {
             proc.Enqueue(models.ElementAt(i));
@@ -75,24 +81,5 @@ public class FileEventBatchProcessorTests
 
         //Assert
         A.CallTo(() => _timer.StartTimer()).MustHaveHappened(nbItem, Times.Exactly);
-    }
-
-    private IEnumerable<FileEventActionModel> CreateMultipleFileEventActionMode(int nulber)
-    {
-        List<FileEventActionModel> models = new();
-        for (int i = 0; i < nulber; i++)
-        {
-            models.Add(CreateFileEventActionModel());
-        }
-        return models;
-    }
-
-    private FileEventActionModel CreateFileEventActionModel()
-    {
-        return new FileEventActionModel(CancellationToken.None)
-        {
-            Id = Guid.NewGuid(),
-            Action = () => { }
-        };
     }
 }
