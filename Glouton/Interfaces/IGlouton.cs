@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Glouton.EventArgs;
+using System;
 
 namespace Glouton.Interfaces;
 
@@ -6,7 +7,7 @@ public interface IGlouton : IDisposable
 {
     int HungerLevel { get; set; }
 
-    event EventHandler? HungerLevelChanged;
+    event EventHandler<HungerLevelEventArgs>? HungerLevelChanged;
 
     void WakeUp();
 }

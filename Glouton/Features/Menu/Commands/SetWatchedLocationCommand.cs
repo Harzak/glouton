@@ -5,11 +5,11 @@ using System.IO;
 
 namespace Glouton.Features.Menu.Commands;
 
-internal class SetWatcherLocationCommand : IMenuCommand
+internal class SetWatchedLocationCommand : IMenuCommand
 {
     private readonly ISettingsService _settingsService;
 
-    public SetWatcherLocationCommand(ISettingsService settingsService)
+    public SetWatchedLocationCommand(ISettingsService settingsService)
     {
         _settingsService = settingsService;
     }

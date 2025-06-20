@@ -38,10 +38,10 @@
         <DataGrid Grid.Row="1" Margin="5"
                   ItemsSource="{Binding FilteredLogEntries}">
             <DataGrid.Columns>
-                <DataGridTextColumn Width="80"
+                <DataGridTextColumn MinWidth="90" MaxWidth="90"
                                     Binding="{Binding Timestamp, StringFormat='HH:mm:ss.fff'}"
                                     Header="Time" />
-                <DataGridTextColumn Width="300"
+                <DataGridTextColumn Width="*" MinWidth="200"
                                     Binding="{Binding FileName}"
                                     Header="FileName">
                     <DataGridTextColumn.ElementStyle>
@@ -50,7 +50,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Width="*"
+                <DataGridTextColumn Width="500"
                                     Binding="{Binding Message}"
                                     Header="Message">
                     <DataGridTextColumn.ElementStyle>

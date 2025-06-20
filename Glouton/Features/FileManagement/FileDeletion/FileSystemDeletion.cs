@@ -12,12 +12,12 @@ namespace Glouton.Features.FileManagement.FileDeletion;
 
 internal sealed class FileSystemDeletion : IFileSystemDeletion
 {
-    private readonly IFileSystemDeletionProxy _fileDeletion;
-    private readonly IDirectoryDeletionProxy _directoryDeletion;
+    private readonly IFileSystemFacade _fileDeletion;
+    private readonly IDirectoryFacade _directoryDeletion;
     private readonly IRetryPolicy _retryPolicy;
     private readonly OperationResult _result;
 
-    public FileSystemDeletion(IFileSystemDeletionProxy fileDeletion, IDirectoryDeletionProxy directoryDeletion, IRetryPolicy retryPolicy)
+    public FileSystemDeletion(IFileSystemFacade fileDeletion, IDirectoryFacade directoryDeletion, IRetryPolicy retryPolicy)
     {
         _fileDeletion = fileDeletion;
         _directoryDeletion = directoryDeletion;
@@ -107,7 +107,7 @@ internal sealed class FileSystemDeletion : IFileSystemDeletion
         _result.Affect(retryResult);
     }
 
-    private OperationResult DeleteFileSystemEntry(string path, IFileSystemDeletionProxy deletionProxy)
+    private OperationResult DeleteFileSystemEntry(string path, IFileSystemFacade deletionProxy)
     {
         OperationResult result = new();
         try

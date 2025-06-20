@@ -1,4 +1,5 @@
-﻿using Glouton.Interfaces;
+﻿using Glouton.EventArgs;
+using Glouton.Interfaces;
 using Glouton.Utils.Result;
 using System;
 using System.IO;
@@ -8,7 +9,9 @@ namespace Glouton.Features.Glouton;
 
 internal sealed class HungryGlouton : IGlouton
 {
-    private readonly IFileWatcherService _watcher;
+    public const int DEFAULT_HUNGER_LEVEL = 50;
+
+    private readonly IFileDetection _detection;
     private readonly IFileSystemDeletionFactory _deletionFactory;
     private readonly ISettingsService _settingsService;
     private readonly ILoggingService _logger;
@@ -17,31 +20,31 @@ internal sealed class HungryGlouton : IGlouton
 
     public int HungerLevel { get; set; }
 
-    public event EventHandler? HungerLevelChanged;
+    public event EventHandler<HungerLevelEventArgs>? HungerLevelChanged;
 
-    public HungryGlouton(IFileWatcherService watcher,
+    public HungryGlouton(IFileDetection detection,
         IFileSystemDeletionFactory deletionFactory,
         ISettingsService settingsService,
         ILoggingService logger)
     {
-        _watcher = watcher;
+        _detection = detection;
         _deletionFactory = deletionFactory;
         _settingsService = settingsService;
         _logger = logger;
         _stomach = new Stomach();
-        this.HungerLevel = 50;
+        this.HungerLevel = DEFAULT_HUNGER_LEVEL;
     }
 
     public void WakeUp()
     {
-        _watcher.StartWatcher(_settingsService.GetSettings().WatchedFilePath);
-        _watcher.FileChanged += OnFileCreated;
+        _detection.StartDetection(_settingsService.GetSettings().WatchedFilePath);
+        _detection.FileDetected += OnFileDetected;
         _stomach.FoodDigested += OnFoodDigested;
     }
 
-    private void OnFileCreated(object sender, FileSystemEventArgs e)
+    private void OnFileDetected(object? sender, DetectedFileEventArgs e)
     {
-        _ =  this.EatAsync(e.FullPath);
+        _ =  this.EatAsync(e.FilePath);
     }
 
     private async Task EatAsync(string path)
@@ -50,7 +53,7 @@ internal sealed class HungryGlouton : IGlouton
         OperationResult result = await deletion.StartAsync(path).ConfigureAwait(false);
         if (result.IsSuccess)
         {
-            _logger.LogInfo($"Glouton ate the file: {path}");
+            _logger.LogInfo($"Glouton ate the file.", Path.GetFileName(path));
             _stomach.AddFood(new Food()
             {
                 Extension = Path.GetExtension(path),
@@ -59,7 +62,7 @@ internal sealed class HungryGlouton : IGlouton
         }
         else
         {
-            _logger.LogError($"Glouton did not like the file: {path}. Error: {result.ErrorMessage}");
+            _logger.LogError($"Glouton did not like the file.", Path.GetFileName(path));
             if (result.HasError)
             {
                 _logger.LogError(result.ErrorMessage);
@@ -80,14 +83,14 @@ internal sealed class HungryGlouton : IGlouton
             default:
                 break;
         }
-        HungerLevelChanged?.Invoke(this, EventArgs.Empty);
+        HungerLevelChanged?.Invoke(this, new HungerLevelEventArgs(HungerLevel));
     }
 
     public void Dispose()
     {
-        if (_watcher != null)
+        if (_detection != null)
         {
-            _watcher.FileChanged -= OnFileCreated;
+            _detection.FileDetected -= OnFileDetected;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Glouton.Interfaces;
 
-public interface IFileSystemDeletionProxy
+public interface IFileSystemFacade
 {
     void Delete(string path);
     bool Exists(string path);

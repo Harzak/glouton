@@ -1,4 +1,5 @@
-﻿using Glouton.Interfaces;
+﻿using Glouton.EventArgs;
+using Glouton.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;

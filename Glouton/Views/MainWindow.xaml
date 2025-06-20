@@ -21,8 +21,8 @@
         <views:MenuView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
                         DataContext="{Binding MenuViewModel}" />
 
-        <views:FileWatcherControlsView Grid.Row="1" Grid.Column="2"
-                                       DataContext="{Binding WatcherControlsViewModel}" />
+        <views:FileDetectionControlsView Grid.Row="1" Grid.Column="2"
+                                         DataContext="{Binding FileDetectionControlsViewModel}" />
 
         <views:GloutonView Grid.Row="1" Grid.Column="0"
                            DataContext="{Binding GloutonViewModel}" />

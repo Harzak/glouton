@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Glouton.Features.Glouton;
+namespace Glouton.EventArgs;
 
-public class DigestionEventArgs : EventArgs
+public class DigestionEventArgs : System.EventArgs
 {
     public GloutonAppreciation Tasting { get; }
 
     public DigestionEventArgs(GloutonAppreciation tasting)
     {
-        this.Tasting = tasting;
+        Tasting = tasting;
     }
 }
 

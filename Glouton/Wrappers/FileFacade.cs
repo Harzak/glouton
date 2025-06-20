@@ -1,9 +1,9 @@
 ﻿using Glouton.Interfaces;
 using System.IO;
 
-namespace Glouton.Features.FileManagement.FileDeletion;
+namespace Glouton.Wrappers;
 
-internal class FileDeletionProxy : IFileSystemDeletionProxy
+internal class FileFacade : IFileSystemFacade
 {
     public void Delete(string path)
     {

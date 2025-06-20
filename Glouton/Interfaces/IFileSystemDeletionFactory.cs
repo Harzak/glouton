@@ -1,7 +1,9 @@
-﻿namespace Glouton.Interfaces;
+﻿using System;
+
+namespace Glouton.Interfaces;
 
 public interface IFileSystemDeletionFactory
 {
     public IFileSystemDeletion CreateDeletionWithExponentialRetry();
-    public IFileSystemDeletion CreateDeletionWithFixedRetry();
+    public IFileSystemDeletion CreateDeletionWithFixedRetry(TimeSpan timeToWait);
 }

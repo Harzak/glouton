@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Glouton.Features.FileManagement.FileWatcher;
+namespace Glouton.EventArgs;
 
 internal sealed class FileSystemEventArgsEqualityComparer : IEqualityComparer<FileSystemEventArgs>
 {

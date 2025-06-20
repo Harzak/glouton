@@ -1,8 +1,10 @@
 ﻿<UserControl x:Class="Glouton.Views.GloutonView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:local="clr-namespace:Glouton.Views" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:Glouton.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:GloutonViewModel}"
              mc:Ignorable="d">
     <Grid>
         <Image RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" SnapsToDevicePixels="True"
-               Source="{Binding Image, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+               Source="{Binding Image, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, FallbackValue={x:Static viewmodels:GloutonViewModel.DefaultImageId}}" />
     </Grid>
 </UserControl>

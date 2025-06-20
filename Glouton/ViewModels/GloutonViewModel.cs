@@ -1,4 +1,5 @@
-﻿using Glouton.Interfaces;
+﻿using Glouton.EventArgs;
+using Glouton.Interfaces;
 using System;
 
 namespace Glouton.ViewModels;
@@ -7,6 +8,7 @@ public class GloutonViewModel : BaseViewModel
 {
     private readonly IGlouton _glouton;
 
+    public const int DefaultImageId = 2;
     public string Image => $"/Ressources/{ImageId}.bmp";
     public int ImageId { get; set; }
 
@@ -15,12 +17,12 @@ public class GloutonViewModel : BaseViewModel
         _glouton = glouton;
         _glouton.HungerLevelChanged += OnHungerLevelChanged;
         _glouton.WakeUp();
-        ImageId = 2;
+        ImageId = DefaultImageId;
     }
 
-    private void OnHungerLevelChanged(object? sender, EventArgs e)
+    private void OnHungerLevelChanged(object? sender, HungerLevelEventArgs e)
     {
-        ImageId =  Math.Min(_glouton.HungerLevel / 20, 4);
+        ImageId =  Math.Clamp(e.HungerLevel / 20, 0, 4);
         base.OnPropertyChanged(nameof(Image));
     }
 }

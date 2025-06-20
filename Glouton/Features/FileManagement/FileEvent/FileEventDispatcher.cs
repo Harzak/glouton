@@ -1,4 +1,5 @@
-﻿using Glouton.Interfaces;
+﻿using Glouton.EventArgs;
+using Glouton.Interfaces;
 using Glouton.Settings;
 using Glouton.Utils.TaskScheduling;
 using System;
@@ -24,7 +25,7 @@ internal sealed class FileEventDispatcher : IFileEventDispatcher
         _batchProcessor.Initialize(Invoke);
     }
 
-    public void BeginInvoke(FileSystemEventArgs args, Action action, CancellationToken cancellationToken = default)
+    public void BeginInvoke(DetectedFileEventArgs args, Action action, CancellationToken cancellationToken = default)
     {
         FileEventActionModel actionInvoker = new(cancellationToken)
         {

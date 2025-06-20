@@ -11,8 +11,8 @@ public class FileSystemDeletionTests
 {
     private const int MAX_ATTEMPTS = 5;  
 
-    private IFileSystemDeletionProxy _fileDeletionProxy;
-    private IDirectoryDeletionProxy _directoryDeletionProxy;
+    private IFileSystemFacade _fileDeletionProxy;
+    private IDirectoryFacade _directoryDeletionProxy;
     private IRetryPolicy _retryPolicy;
 
     private FileSystemDeletion _fileSystemDeletion;
@@ -20,8 +20,8 @@ public class FileSystemDeletionTests
     [TestInitialize]
     public void Initialize()
     {
-        _fileDeletionProxy = A.Fake<IFileSystemDeletionProxy>();
-        _directoryDeletionProxy = A.Fake<IDirectoryDeletionProxy>();
+        _fileDeletionProxy = A.Fake<IFileSystemFacade>();
+        _directoryDeletionProxy = A.Fake<IDirectoryFacade>();
         _retryPolicy = A.Fake<IRetryPolicy>();
 
         A.CallTo(() => _retryPolicy.GetNextRetryDelay(A<int>.Ignored)).Returns(TimeSpan.Zero);

@@ -7,16 +7,18 @@ namespace Glouton.ViewModels;
 
 public class MenuViewModel : BaseViewModel
 {
-    public ICommand OpenWatcherLocationCommand { get; }
-    public ICommand SetWatcherLocationCommand { get; }
+    public ICommand OpenWatchedLocationCommand { get; }
+    public ICommand SetWatchedLocationCommand { get; }
 
     public MenuViewModel(IMenuCommandInvoker commandInvoker,
-                         ISettingsService settingsService)
+                         ISettingsService settingsService,
+                         IProcessFacade processFacade,
+                         IDirectoryFacade directoryFacade)
     {
-        IMenuCommand openWatcherLocationMenuCommand = new OpenFileWatcherLocationCommand(settingsService);
-        IMenuCommand setWatcherLocationMenuCommand = new SetWatcherLocationCommand(settingsService);
+        IMenuCommand openWatchedLocationMenuCommand = new OpenWatchedLocationCommand(settingsService, processFacade, directoryFacade);
+        IMenuCommand setWatchedLocationMenuCommand = new SetWatchedLocationCommand(settingsService);
 
-        this.OpenWatcherLocationCommand = new MenuRelayCommand(openWatcherLocationMenuCommand, commandInvoker);
-        this.SetWatcherLocationCommand = new MenuRelayCommand(setWatcherLocationMenuCommand, commandInvoker);
+        this.OpenWatchedLocationCommand = new MenuRelayCommand(openWatchedLocationMenuCommand, commandInvoker);
+        this.SetWatchedLocationCommand = new MenuRelayCommand(setWatchedLocationMenuCommand, commandInvoker);
     }
 }

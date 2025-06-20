@@ -1,8 +1,9 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
+using Glouton.EventArgs;
 using Glouton.Features.FileManagement.FileDeletion;
+using Glouton.Features.FileManagement.FileDetection;
 using Glouton.Features.FileManagement.FileEvent;
-using Glouton.Features.FileManagement.FileWatcher;
 using Glouton.Features.Glouton;
 using Glouton.Features.Loging;
 using Glouton.Features.Menu;
@@ -21,7 +22,7 @@ using System.Threading.Tasks;
 namespace Glouton.Tests.IntegrationTests;
 
 [TestClass]
-public class FileWatcherTests
+public class FileDetectionCoordinatorTests
 {
     private DirectoryInfo _directoryToWatch;
     private ServiceProvider _serviceProvider;
@@ -56,29 +57,28 @@ public class FileWatcherTests
 
         services.AddSingleton<IFileEventBatchProcessor, FileEventBatchProcessor>();
         services.AddSingleton<IFileEventDispatcher, FileEventDispatcher>();
-        services.AddSingleton<IFileWatcherService, FileWatcherService>();
+        services.AddSingleton<IFileDetection, FileDetectionCoordinator>();
         services.AddSingleton<Interfaces.ITimer, ConcurrentTimer>();
         services.AddSingleton<ILoggingService, AppLogger>();
 
         _serviceProvider = services.BuildServiceProvider();
         _scope = _serviceProvider.CreateScope();
-
     }
 
     [TestMethod]
-    public async Task e()
+    public async Task FileDetection_ShouldDetect_FilesCreation()
     {
         // Arrange
         int expectedFileCount = 20;
-        var allEventsReceived = new TaskCompletionSource<List<FileSystemEventArgs>>();
-        List<FileSystemEventArgs> fileEvents = [];
+        var allEventsReceived = new TaskCompletionSource<List<DetectedFileEventArgs>>();
+        List<DetectedFileEventArgs> fileEvents = [];
         var lockObject = new object();
 
-        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(500));
+        using CancellationTokenSource timeout = new(delay: TimeSpan.FromSeconds(3));
 
-        IFileWatcherService fileWatcher = _scope.ServiceProvider.GetRequiredService<IFileWatcherService>();
+        IFileDetection detection = _scope.ServiceProvider.GetRequiredService<IFileDetection>();
 
-        fileWatcher.FileChanged += (sender, args) =>
+        detection.FileDetected += (sender, args) =>
         {
             lock (lockObject)
             {
@@ -90,13 +90,18 @@ public class FileWatcherTests
             }
         };
 
+        timeout.Token.Register(() =>
+        {
+            allEventsReceived.TrySetException(new TimeoutException($"Only received {fileEvents.Count}/{expectedFileCount} events within timeout"));
+        });
+
         // Act
-        fileWatcher.StartWatcher(_directoryToWatch.FullName);
+        detection.StartDetection(_directoryToWatch.FullName);
         IEnumerable<string> filePaths = CreateTextFiles(expectedFileCount);
-        List<FileSystemEventArgs> receivedEvents = await allEventsReceived.Task.ConfigureAwait(false);
+        List<DetectedFileEventArgs> receivedEvents = await allEventsReceived.Task.ConfigureAwait(false);
 
         // Assert
-        receivedEvents.Select(x => x.FullPath).Should().BeEquivalentTo(filePaths);
+        receivedEvents.Select(x => x.FilePath).Should().BeEquivalentTo(filePaths);
     }
 
     private List<string> CreateTextFiles(int numberOfFiles)
@@ -104,6 +109,7 @@ public class FileWatcherTests
         List<string> filePaths = [];
         for (int i = 0; i < numberOfFiles; i++)
         {
+
             string fileName = $"testfile_{i}.txt";
             string filePath = Path.Combine(_directoryToWatch.FullName, fileName);
             File.WriteAllText(filePath, "This is a test file.");
@@ -115,7 +121,7 @@ public class FileWatcherTests
     [TestCleanup]
     public void Cleanup()
     {
-        _scope?.ServiceProvider.GetRequiredService<IFileWatcherService>().StopWatcher();
+        _scope?.ServiceProvider.GetRequiredService<IFileDetection>().StopDetection();
         _scope?.Dispose();
         _serviceProvider?.Dispose();
         if (_directoryToWatch != null && _directoryToWatch.Exists)

@@ -1,4 +1,5 @@
-﻿using Glouton.Features.Loging;
+﻿using Glouton.EventArgs;
+using Glouton.Features.Loging;
 using System;
 using System.Collections.Generic;
 

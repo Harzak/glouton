@@ -26,7 +26,7 @@ public abstract class BaseRelayCommand : ICommand
 
     public abstract void Execute(object? parameter);
 
-    private void CommandBase_RaiseCanExecuteChanged(object? sender, EventArgs e)
+    private void CommandBase_RaiseCanExecuteChanged(object? sender, System.EventArgs e)
     {
         CommandManager.InvalidateRequerySuggested();
     }

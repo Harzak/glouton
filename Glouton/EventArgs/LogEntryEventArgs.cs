@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Glouton.Features.Loging;
+using System;
 
-namespace Glouton.Features.Loging;
+namespace Glouton.EventArgs;
 
-public class LogEntryEventArgs : EventArgs
+public class LogEntryEventArgs : System.EventArgs
 {
     public LogEntry LogEntry { get; }
 

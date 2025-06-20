@@ -7,8 +7,8 @@
     <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
           BorderBrush="LightGray" BorderThickness="1">
         <MenuItem Header="_Options">
-            <MenuItem Command="{Binding SetWatcherLocationCommand}" Header="_Set watcher location" />
-            <MenuItem Command="{Binding OpenWatcherLocationCommand}" Header="_Open watcher location" />
+            <MenuItem Command="{Binding SetWatchedLocationCommand}" Header="_Set watched location" />
+            <MenuItem Command="{Binding OpenWatchedLocationCommand}" Header="_Open watched location" />
         </MenuItem>
     </Menu>
 </UserControl>

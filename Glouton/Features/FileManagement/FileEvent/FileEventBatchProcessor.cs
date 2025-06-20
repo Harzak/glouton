@@ -12,9 +12,6 @@ using System.Timers;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
-/// <summary>
-/// Processes events triggered by the file watcher in batch mode
-/// </summary>
 internal sealed class FileEventBatchProcessor : IFileEventBatchProcessor
 {
     private readonly ILoggingService _logger;
