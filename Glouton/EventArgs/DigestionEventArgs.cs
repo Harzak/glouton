@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Glouton.EventArgs;
+﻿namespace Glouton.EventArgs;
 
 public class DigestionEventArgs : System.EventArgs
 {

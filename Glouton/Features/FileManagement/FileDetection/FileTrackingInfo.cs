@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Glouton.Features.FileManagement.FileDetection;
 
 internal class FileTrackingInfo
 {
-    private static readonly TimeSpan DispatchThrottleWindow = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan DispatchThrottleWindow = TimeSpan.FromSeconds(2);
 
     public FileInfoSnapshot FileInfo { get; set; }
     public required DateTime LastSeenUtc { get; set; }

@@ -9,7 +9,7 @@ namespace Glouton.Tests.UnitTests.Features.FileManagement.FileDeletetion;
 [TestClass]
 public class FileSystemDeletionTests
 {
-    private const int MAX_ATTEMPTS = 5;  
+    private const int MAX_ATTEMPTS = 5;
 
     private IFileSystemFacade _fileDeletionProxy;
     private IDirectoryFacade _directoryDeletionProxy;
@@ -121,7 +121,7 @@ public class FileSystemDeletionTests
     {
         //Arrange
         string nestedFile2 = Path.Combine(path, "nestedFile2.txt");
-        string nestedFile1 = Path.Combine(path, "nestedFile1.txt"); 
+        string nestedFile1 = Path.Combine(path, "nestedFile1.txt");
         A.CallTo(() => _directoryDeletionProxy.Exists(path)).ReturnsNextFromSequence(true, false);
         A.CallTo(() => _directoryDeletionProxy.GetFiles(path)).Returns([nestedFile1, nestedFile2]);
 

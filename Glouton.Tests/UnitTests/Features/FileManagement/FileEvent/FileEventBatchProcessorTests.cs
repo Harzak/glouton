@@ -2,8 +2,6 @@
 using FluentAssertions;
 using Glouton.Features.FileManagement.FileEvent;
 using Glouton.Interfaces;
-using Glouton.Settings;
-using Microsoft.Extensions.Options;
 using System.Timers;
 
 namespace Glouton.Tests.UnitTests.Features.FileManagement.FileEvent;

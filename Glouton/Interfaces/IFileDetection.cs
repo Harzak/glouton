@@ -1,7 +1,6 @@
 ﻿using Glouton.EventArgs;
 using Glouton.Features.FileManagement.FileDetection;
 using System;
-using System.IO;
 
 namespace Glouton.Interfaces;
 

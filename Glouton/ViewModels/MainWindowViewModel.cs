@@ -1,6 +1,4 @@
-﻿using Glouton.Interfaces;
-
-namespace Glouton.ViewModels;
+﻿namespace Glouton.ViewModels;
 
 public class MainWindowViewModel : BaseViewModel
 {
@@ -9,19 +7,14 @@ public class MainWindowViewModel : BaseViewModel
     public LogViewModel LogViewModel { get; }
     public GloutonViewModel GloutonViewModel { get; }
 
-    public MainWindowViewModel(
-        IGlouton glouton,
-        IFileDetection fileDetection,
-        IMenuCommandInvoker commandInvoker,
-        ISettingsService settingsService,
-        IProcessFacade processFacade,
-        IDirectoryFacade directoryFacade,
-        ILoggingService logger)
+    public MainWindowViewModel(MenuViewModel menuViewModel,
+        FileDetectionControlsViewModel fileDetectionControlsViewModel,
+        LogViewModel logViewModel,
+        GloutonViewModel gloutonViewModel)
     {
-        //TODO Inject Viewmodel
-        this.MenuViewModel = new MenuViewModel(commandInvoker, settingsService, processFacade, directoryFacade);
-        this.FileDetectionControlsViewModel = new FileDetectionControlsViewModel(fileDetection, settingsService);
-        this.LogViewModel = new LogViewModel(logger);
-        this.GloutonViewModel = new GloutonViewModel(glouton);
+        MenuViewModel = menuViewModel;
+        FileDetectionControlsViewModel = fileDetectionControlsViewModel;
+        LogViewModel = logViewModel;
+        GloutonViewModel = gloutonViewModel;
     }
 }

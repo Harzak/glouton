@@ -1,5 +1,4 @@
 ﻿using Glouton.Features.Loging;
-using System;
 
 namespace Glouton.EventArgs;
 

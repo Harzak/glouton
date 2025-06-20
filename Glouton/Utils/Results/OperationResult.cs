@@ -37,7 +37,7 @@ public class OperationResult : BaseResult
     {
         ArgumentNullException.ThrowIfNull(result, nameof(result));
         this.IsSuccess = result.IsSuccess;
-        this.ErrorMessage = result.ErrorMessage;    
-        this.ErrorCode = result.ErrorCode;  
+        this.ErrorMessage = result.ErrorMessage;
+        this.ErrorCode = result.ErrorCode;
     }
 }

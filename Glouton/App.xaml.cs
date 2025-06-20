@@ -1,16 +1,5 @@
 ﻿using Glouton.Extensions;
-using Glouton.Features.FileManagement.FileDeletion;
-using Glouton.Features.FileManagement.FileEvent;
-using Glouton.Features.FileManagement.FileDetection;
-using Glouton.Features.Glouton;
-using Glouton.Features.Loging;
-using Glouton.Features.Menu;
-using Glouton.Interfaces;
-using Glouton.Settings;
-using Glouton.Utils.Time;
-using Glouton.ViewModels;
 using Glouton.Views;
-using Glouton.Wrappers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
@@ -27,32 +16,12 @@ public partial class App : Application
     public App()
     {
         _host = Host.CreateDefaultBuilder()
-            .BuildViewModels()
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddSingleton(s => new MainWindow()
-                {
-                    DataContext = s.GetRequiredService<MainWindowViewModel>()
-                });
-
-                services.AddSingleton<ISettingsService, SettingsService>();
-                services.Configure<BatchTimerSettings>(hostContext.Configuration.GetSection("BatchTimerSettings"));
-                services.Configure<BatchSettings>(hostContext.Configuration.GetSection("BatchSettings"));
-
-                services.AddSingleton<IFileEventBatchProcessor, FileEventBatchProcessor>();
-                services.AddSingleton<IFileEventDispatcher, FileEventDispatcher>();
-                services.AddSingleton<IFileSystemDeletionFactory, FileSystemDeletionFactory>();
-                services.AddSingleton<IFileDetection, FileDetectionCoordinator>();
-
-                services.AddSingleton<ITimer, ConcurrentTimer>();
-                services.AddSingleton<IMenuCommandInvoker, MenuCommandInvoker>();
-                services.AddSingleton<ILoggingService, AppLogger>();
-                services.AddSingleton<IDirectoryFacade, DirectoryFacade>();
-                services.AddSingleton<IFileSystemFacade, FileFacade>();
-                services.AddSingleton<IProcessFacade, ProcessFacade>();
-
-
-                services.AddSingleton<IGlouton, HungryGlouton>();
+                services.ConfigureSettings(hostContext);
+                services.RegisterViewModels();
+                services.RegisterAppServices();
+                services.RegisterUtilities();
             })
             .Build();
     }

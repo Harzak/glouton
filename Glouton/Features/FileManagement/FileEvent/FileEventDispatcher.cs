@@ -1,10 +1,8 @@
 ﻿using Glouton.EventArgs;
 using Glouton.Interfaces;
-using Glouton.Settings;
 using Glouton.Utils.TaskScheduling;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;

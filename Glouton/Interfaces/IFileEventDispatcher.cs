@@ -1,6 +1,5 @@
 ﻿using Glouton.EventArgs;
 using System;
-using System.IO;
 using System.Threading;
 
 namespace Glouton.Interfaces;

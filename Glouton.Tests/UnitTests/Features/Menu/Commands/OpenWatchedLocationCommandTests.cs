@@ -1,17 +1,9 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
-using Glouton.Features.Glouton;
 using Glouton.Features.Menu.Commands;
 using Glouton.Interfaces;
 using Glouton.Settings;
-using Glouton.ViewModels;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Glouton.Tests.UnitTests.Features.Menu.Commands;
 

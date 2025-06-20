@@ -2,7 +2,6 @@
 using Glouton.Settings;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Windows;
 
 namespace Glouton.Features.Menu.Commands;

@@ -3,11 +3,8 @@ using Glouton.Interfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace Glouton.Features.FileManagement.FileDetection;
 
@@ -19,9 +16,9 @@ public sealed class FileDetectionCoordinator : IFileDetection
     private FileScan? _scanner;
     private FileWatcher? _watcher;
 
-    private readonly ConcurrentDictionary<string, FileTrackingInfo> _trackedFiles;
     private readonly object _lock;
-
+    private readonly Timer _cleanupTimer;
+    private readonly ConcurrentDictionary<string, FileTrackingInfo> _trackedFiles;
 
     public event EventHandler<FileDetectionStateEventArgs>? StatusChanged;
     public event EventHandler<DetectedFileEventArgs>? FileDetected;
@@ -34,6 +31,7 @@ public sealed class FileDetectionCoordinator : IFileDetection
         _logger = logger;
         _trackedFiles = [];
         _lock = new object();
+        _cleanupTimer = new Timer(CleanupExpiredEntries, null, TimeSpan.FromMinutes(2), TimeSpan.FromMinutes(2));
         this.State = EFileDetectionState.Enabled;
     }
 
@@ -75,6 +73,7 @@ public sealed class FileDetectionCoordinator : IFileDetection
     private void OnWatcherFileDetected(object? sender, DetectedFileEventArgs e)
     {
         ProcessDetectedFile(e);
+        _scanner?.Change(ScanPolicy.FastScanPolicy);
     }
 
     private void ProcessDetectedFile(DetectedFileEventArgs e)
@@ -101,7 +100,7 @@ public sealed class FileDetectionCoordinator : IFileDetection
                 }
                 else
                 {
-                    existing.LastSeenUtc =now;
+                    existing.LastSeenUtc = now;
                 }
             }
             else
@@ -192,6 +191,7 @@ public sealed class FileDetectionCoordinator : IFileDetection
 
     public void Dispose()
     {
+        _cleanupTimer?.Dispose();
         _scanner?.Dispose();
         _watcher?.Dispose();
         _dispatcher.Dispose();

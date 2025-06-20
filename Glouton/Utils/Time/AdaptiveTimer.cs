@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace Glouton.Utils.Time;
 
 internal class AdaptiveTimer : IDisposable
 {
-    private Timer _systemTimer;
+    private readonly Timer _systemTimer;
 
     private Action<object?, ElapsedEventArgs>? _callback;
     private Func<bool>? _fastIntervalCondition;
 
-    private double _slowInterval;
-    private double _fastInterval;
+    private readonly double _slowInterval;
+    private readonly double _fastInterval;
     public bool IsInFastMode { get; private set; }
 
     public AdaptiveTimer(TimeSpan slowInterval, TimeSpan fastInterval, bool autoReset = true)

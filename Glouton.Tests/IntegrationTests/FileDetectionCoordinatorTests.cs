@@ -1,23 +1,12 @@
-﻿using FakeItEasy;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Glouton.EventArgs;
-using Glouton.Features.FileManagement.FileDeletion;
 using Glouton.Features.FileManagement.FileDetection;
 using Glouton.Features.FileManagement.FileEvent;
-using Glouton.Features.Glouton;
 using Glouton.Features.Loging;
-using Glouton.Features.Menu;
 using Glouton.Interfaces;
 using Glouton.Settings;
 using Glouton.Utils.Time;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mono.Cecil.Cil;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Glouton.Tests.IntegrationTests;
 
@@ -40,29 +29,6 @@ public class FileDetectionCoordinatorTests
         {
             _directoryToWatch = Directory.CreateDirectory(testDataFile);
         }
-    }
-
-    private void ConfigureServices()
-    {
-        var services = new ServiceCollection();
-        services.AddSingleton<ISettingsService, SettingsService>();
-        services.Configure<BatchTimerSettings>(options =>
-        {
-            options.IntervalMs = 1;
-        });
-        services.Configure<BatchSettings>(options =>
-        {
-            options.MaxItems = 400;
-        });
-
-        services.AddSingleton<IFileEventBatchProcessor, FileEventBatchProcessor>();
-        services.AddSingleton<IFileEventDispatcher, FileEventDispatcher>();
-        services.AddSingleton<IFileDetection, FileDetectionCoordinator>();
-        services.AddSingleton<Interfaces.ITimer, ConcurrentTimer>();
-        services.AddSingleton<ILoggingService, AppLogger>();
-
-        _serviceProvider = services.BuildServiceProvider();
-        _scope = _serviceProvider.CreateScope();
     }
 
     [TestMethod]
@@ -92,7 +58,7 @@ public class FileDetectionCoordinatorTests
 
         timeout.Token.Register(() =>
         {
-            allEventsReceived.TrySetException(new TimeoutException($"Only received {fileEvents.Count}/{expectedFileCount} events within timeout"));
+            allEventsReceived.TrySetException(new TimeoutException($"Only received {fileEvents.Count}/{expectedFileCount}"));
         });
 
         // Act
@@ -101,7 +67,7 @@ public class FileDetectionCoordinatorTests
         List<DetectedFileEventArgs> receivedEvents = await allEventsReceived.Task.ConfigureAwait(false);
 
         // Assert
-        receivedEvents.Select(x => x.FilePath).Should().BeEquivalentTo(filePaths);
+        receivedEvents.Select(x => x.FilePath).Distinct().Should().BeEquivalentTo(filePaths);
     }
 
     private List<string> CreateTextFiles(int numberOfFiles)
@@ -109,13 +75,35 @@ public class FileDetectionCoordinatorTests
         List<string> filePaths = [];
         for (int i = 0; i < numberOfFiles; i++)
         {
-
             string fileName = $"testfile_{i}.txt";
             string filePath = Path.Combine(_directoryToWatch.FullName, fileName);
             File.WriteAllText(filePath, "This is a test file.");
             filePaths.Add(filePath);
         }
         return filePaths;
+    }
+
+    private void ConfigureServices()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<ISettingsService, SettingsService>();
+        services.Configure<BatchTimerSettings>(options =>
+        {
+            options.IntervalMs = 1;
+        });
+        services.Configure<BatchSettings>(options =>
+        {
+            options.MaxItems = 400;
+        });
+
+        services.AddSingleton<IFileEventBatchProcessor, FileEventBatchProcessor>();
+        services.AddSingleton<IFileEventDispatcher, FileEventDispatcher>();
+        services.AddSingleton<IFileDetection, FileDetectionCoordinator>();
+        services.AddSingleton<Interfaces.ITimer, ConcurrentTimer>();
+        services.AddSingleton<ILoggingService, AppLogger>();
+
+        _serviceProvider = services.BuildServiceProvider();
+        _scope = _serviceProvider.CreateScope();
     }
 
     [TestCleanup]

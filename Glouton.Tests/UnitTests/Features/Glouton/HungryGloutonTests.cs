@@ -3,12 +3,6 @@ using FluentAssertions;
 using Glouton.EventArgs;
 using Glouton.Features.Glouton;
 using Glouton.Interfaces;
-using Glouton.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Glouton.Tests.UnitTests.Features.Glouton;
 
@@ -48,8 +42,8 @@ public class HungryGloutonTests
     public void EatingGoodThings_MakesGlouton_Happy(string file)
     {
         //Arrange
-        string filePath = Path.Combine(WATCHED_FILEPATH, file); 
-        using HungryGlouton glouton = new( _detection, _deletionFactory, _settingsService, _logger);
+        string filePath = Path.Combine(WATCHED_FILEPATH, file);
+        using HungryGlouton glouton = new(_detection, _deletionFactory, _settingsService, _logger);
         A.CallTo(() => _deletion.StartAsync(filePath)).Returns(new Utils.Result.OperationResult(success: true));
 
         //Act
@@ -57,7 +51,7 @@ public class HungryGloutonTests
         _detection.FileDetected += Raise.FreeForm<EventHandler<DetectedFileEventArgs>>.With(_detection, new DetectedFileEventArgs(filePath, DateTime.UtcNow));
 
         //Assert
-        glouton.HungerLevel.Should().BeGreaterThan(HungryGlouton.DEFAULT_HUNGER_LEVEL); 
+        glouton.HungerLevel.Should().BeGreaterThan(HungryGlouton.DEFAULT_HUNGER_LEVEL);
     }
 
     [DataRow("testfile.exe")]

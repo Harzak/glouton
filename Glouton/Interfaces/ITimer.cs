@@ -7,7 +7,7 @@ public interface ITimer : IDisposable
 {
     event ElapsedEventHandler? Elapsed;
 
-    Func<bool>? RunUntil { get; set; }  
+    Func<bool>? RunUntil { get; set; }
 
     ITimer StartTimer();
     void StopTimer();

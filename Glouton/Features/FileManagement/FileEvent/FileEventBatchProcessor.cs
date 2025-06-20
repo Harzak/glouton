@@ -1,6 +1,5 @@
 ﻿using Glouton.Interfaces;
 using Glouton.Settings;
-using Glouton.Utils.Time;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -22,7 +21,7 @@ internal sealed class FileEventBatchProcessor : IFileEventBatchProcessor
 
     private Action<List<FileEventActionModel>>? _filesAction;
 
-    public FileEventBatchProcessor(IOptions<BatchSettings> options,ILoggingService logger, ITimer timer)
+    public FileEventBatchProcessor(IOptions<BatchSettings> options, ILoggingService logger, ITimer timer)
     {
         _maxBatchItem = options.Value.MaxItems;
         _logger = logger;
@@ -39,7 +38,7 @@ internal sealed class FileEventBatchProcessor : IFileEventBatchProcessor
 
     public void Enqueue(FileEventActionModel model)
     {
-        if(_filesAction is null)
+        if (_filesAction is null)
         {
             throw new InvalidOperationException("The batch processor has not been initialized. Call Initialize first.");
         }

@@ -1,12 +1,8 @@
 ﻿using Glouton.EventArgs;
-using Glouton.Interfaces;
-using Glouton.Utils.Time;
 using System;
 using System.IO;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
-using System.Timers;
 
 namespace Glouton.Features.FileManagement.FileDetection;
 
@@ -48,7 +44,7 @@ internal sealed class FileWatcher : IDisposable
 
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        FileDetected?.Invoke(this, new DetectedFileEventArgs(e.FullPath, DateTime.UtcNow));    
+        FileDetected?.Invoke(this, new DetectedFileEventArgs(e.FullPath, DateTime.UtcNow));
     }
 
     private static FileSystemWatcher CreateFileWatcher(string folder)

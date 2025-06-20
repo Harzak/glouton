@@ -1,5 +1,4 @@
 ﻿using Glouton.Features.FileManagement.FileDetection;
-using System;
 
 namespace Glouton.EventArgs;
 
