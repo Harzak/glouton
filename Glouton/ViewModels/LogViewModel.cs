@@ -80,5 +80,11 @@ public class LogViewModel : BaseViewModel
         _logEntries.Clear();
         FilteredLogEntries.Clear();
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        _logger.LogEntryAdded -= OnLogEntryAdded;
+        base.Dispose(disposing);
+    }
 }
 

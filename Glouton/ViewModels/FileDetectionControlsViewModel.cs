@@ -19,7 +19,7 @@ public class FileDetectionControlsViewModel : BaseViewModel
     public FileDetectionControlsViewModel(IFileDetection fileDetection, ISettingsService settingsService)
     {
         _fileDetection = fileDetection;
-        _fileDetection.StatusChanged +=   OnStatusChanged;
+        _fileDetection.StatusChanged += OnStatusChanged;
 
         StartDetectionCommand = new StarDetectionCommand(fileDetection, settingsService);
         StopDetectionCommand = new StopDetectionCommand(fileDetection);
@@ -29,6 +29,17 @@ public class FileDetectionControlsViewModel : BaseViewModel
     {
         base.OnPropertyChanged(nameof(CanBeStarted));
         base.OnPropertyChanged(nameof(CanBeStopped));
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _fileDetection.Dispose();
+        }
+        _fileDetection.StatusChanged -= OnStatusChanged;
+        
+        base.Dispose(disposing);
     }
 }
 

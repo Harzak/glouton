@@ -191,9 +191,20 @@ public sealed class FileDetectionCoordinator : IFileDetection
 
     public void Dispose()
     {
+        if (_scanner != null)
+        {
+            _scanner.FileDetected -= this.OnScanFileDetected;
+            _scanner.Dispose();
+        }
+        _scanner = null;
+        if (_watcher != null)
+        {
+            _watcher.FileDetected -= this.OnWatcherFileDetected;
+            _watcher.Error -= this.OnError;
+            _watcher.Dispose();
+        }
+        _watcher = null;
         _cleanupTimer?.Dispose();
-        _scanner?.Dispose();
-        _watcher?.Dispose();
         _dispatcher.Dispose();
     }
 }

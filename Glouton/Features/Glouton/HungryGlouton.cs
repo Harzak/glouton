@@ -89,8 +89,13 @@ internal sealed class HungryGlouton : IGlouton
     public void Dispose()
     {
         if (_detection != null)
-        {
+        {      
             _detection.FileDetected -= OnFileDetected;
+            _detection.Dispose();
+        }
+        if (_stomach != null)
+        {
+            _stomach.FoodDigested -= OnFoodDigested;
         }
     }
 }

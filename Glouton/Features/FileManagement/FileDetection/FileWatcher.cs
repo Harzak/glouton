@@ -67,9 +67,13 @@ internal sealed class FileWatcher : IDisposable
 
     public void Dispose()
     {
-        _systemFileWatcher?.Dispose();
-        _subsriptions?.Dispose();
+        if (_systemFileWatcher != null)
+        {
+            _systemFileWatcher.Error -= Error; 
+            _systemFileWatcher.Dispose();
+        }
         _systemFileWatcher = null;
+        _subsriptions?.Dispose();
         _subsriptions = null;
     }
 }

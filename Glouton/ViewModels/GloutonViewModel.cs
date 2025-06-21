@@ -25,4 +25,10 @@ public class GloutonViewModel : BaseViewModel
         ImageId =  Math.Clamp(e.HungerLevel / 20, 0, 4);
         base.OnPropertyChanged(nameof(Image));
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        _glouton.HungerLevelChanged -= OnHungerLevelChanged;
+        base.Dispose(disposing);
+    }
 }

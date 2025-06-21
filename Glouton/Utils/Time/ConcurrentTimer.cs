@@ -68,6 +68,10 @@ internal sealed class ConcurrentTimer : ITimer
     public void Dispose()
     {
         StopTimer();
-        _timer?.Dispose();
+        if (_timer != null)
+        {
+            _timer.Elapsed -= OnTimerElapsed;
+            _timer.Dispose();
+        }
     }
 }

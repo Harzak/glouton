@@ -80,5 +80,7 @@ internal class AdaptiveTimer : IDisposable
         this.StopTimer();
         _systemTimer.Elapsed -= OnSystemTimerElapsed;
         _systemTimer?.Dispose();
+        _callback = null;
+        _fastIntervalCondition = null;
     }
 }

@@ -63,7 +63,10 @@ internal sealed class FileEventBatchProcessor : IFileEventBatchProcessor
 
     public void Dispose()
     {
-        _timer?.Dispose();
+        if (_timer != null)
+        {
+            _timer.Elapsed -= OnTimerElapsed;
+            _timer.Dispose();
+        }
     }
 }
-
