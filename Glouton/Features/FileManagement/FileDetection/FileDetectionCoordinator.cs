@@ -210,7 +210,7 @@ public sealed class FileDetectionCoordinator : IFileDetection
         {
             State = state;
             StatusChanged?.Invoke(this, new FileDetectionStateEventArgs(state));
-            _logger.LogInfo($"File watcher is now {state}.");
+            _logger.LogInfo($"File detection is now {state}.");
         }
     }
 
