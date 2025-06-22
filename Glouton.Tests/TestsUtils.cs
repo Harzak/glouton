@@ -20,7 +20,6 @@ internal static class TestsUtils
     {
         return new FileEventActionModel(CancellationToken.None)
         {
-            Id = Guid.NewGuid(),
             Action = () => { }
         };
     }

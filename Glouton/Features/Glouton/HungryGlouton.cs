@@ -12,9 +12,9 @@ internal sealed class HungryGlouton : IGlouton
     public const int DEFAULT_HUNGER_LEVEL = 50;
 
     private readonly IFileDetection _detection;
-    private readonly IFileSystemDeletionFactory _deletionFactory;
     private readonly ISettingsService _settingsService;
     private readonly ILoggingService _logger;
+    private readonly IFileSystemDeletion _deletion;
 
     private readonly Stomach _stomach;
 
@@ -28,9 +28,9 @@ internal sealed class HungryGlouton : IGlouton
         ILoggingService logger)
     {
         _detection = detection;
-        _deletionFactory = deletionFactory;
         _settingsService = settingsService;
         _logger = logger;
+        _deletion = deletionFactory.CreateDeletionWithExponentialRetry();
         _stomach = new Stomach();
         this.HungerLevel = DEFAULT_HUNGER_LEVEL;
     }
@@ -38,19 +38,19 @@ internal sealed class HungryGlouton : IGlouton
     public void WakeUp()
     {
         _detection.StartDetection(_settingsService.GetSettings().WatchedFilePath);
-        _detection.FileDetected += OnFileDetected;
+        _detection.InvokeOnFileDetected(OnFileDetected);
         _stomach.FoodDigested += OnFoodDigested;
     }
 
-    private void OnFileDetected(object? sender, DetectedFileEventArgs e)
+    private void OnFileDetected(DetectedFileEventArgs e)
     {
         _ =  this.EatAsync(e.FilePath);
     }
 
     private async Task EatAsync(string path)
     {
-        IFileSystemDeletion deletion = _deletionFactory.CreateDeletionWithExponentialRetry();
-        OperationResult result = await deletion.StartAsync(path).ConfigureAwait(false);
+
+        OperationResult result = await _deletion.StartAsync(path).ConfigureAwait(false);
         if (result.IsSuccess)
         {
             _logger.LogInfo($"Glouton ate the file.", Path.GetFileName(path));
@@ -88,11 +88,7 @@ internal sealed class HungryGlouton : IGlouton
 
     public void Dispose()
     {
-        if (_detection != null)
-        {      
-            _detection.FileDetected -= OnFileDetected;
-            _detection.Dispose();
-        }
+        _detection?.Dispose();
         if (_stomach != null)
         {
             _stomach.FoodDigested -= OnFoodDigested;

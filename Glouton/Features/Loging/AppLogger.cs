@@ -10,6 +10,7 @@ namespace Glouton.Features.Loging;
 
 internal sealed class AppLogger : ILoggingService
 {
+    private const int MAX_ENTRIES = 1000;
     private readonly ConcurrentQueue<LogEntry> _entries;
 
     public event EventHandler<LogEntryEventArgs>? LogEntryAdded;
@@ -41,6 +42,8 @@ internal sealed class AppLogger : ILoggingService
 
     private void AddLog(LogLevel level, string message, string fileName = "")
     {
+        while (_entries.Count > MAX_ENTRIES && _entries.TryDequeue(out _)) { }
+
         LogEntry entry = new()
         {
             Level = level,

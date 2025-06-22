@@ -40,12 +40,6 @@ public class LogViewModel : BaseViewModel
         this.ClearLogsCommand = new ActionRelayCommand(ClearLogs);
 
         _logger.LogEntryAdded += OnLogEntryAdded;
-
-        foreach (LogEntry log in _logger.GetAllLogs())
-        {
-            _logEntries.Add(log);
-            FilteredLogEntries.Add(log);
-        }
     }
 
     private void OnLogEntryAdded(object? sender, LogEntryEventArgs arg)

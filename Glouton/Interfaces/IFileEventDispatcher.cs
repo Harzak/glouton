@@ -6,5 +6,5 @@ namespace Glouton.Interfaces;
 
 public interface IFileEventDispatcher : IDisposable
 {
-    void BeginInvoke(DetectedFileEventArgs args, Action action, CancellationToken cancellationToken = default);
+    void Enqueue(DetectedFileEventArgs args, Action action, CancellationToken cancellationToken = default);
 }

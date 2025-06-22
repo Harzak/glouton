@@ -70,4 +70,33 @@ public class GloutonViewModelTests : BaseViewModel
         viewModel.ImageId.Should().BeLessThan(previousImageId);
         viewModel.ImageId.Should().BeLessThan(GloutonViewModel.DefaultImageId);
     }
+
+    [TestMethod]
+    public void Constructor_ShouldInitialize_WithDefaultImageId()
+    {
+        //Arrange & Act
+        using GloutonViewModel viewModel = new(_glouton);
+
+        //Assert
+        viewModel.ImageId.Should().Be(GloutonViewModel.DefaultImageId);
+    }
+
+    [DataRow(0, 0)]   
+    [DataRow(25, 1)]  
+    [DataRow(50, 2)]  
+    [DataRow(75, 3)]  
+    [DataRow(100, 4)] 
+    [TestMethod]
+    public void HungerLevel_ShouldMap_ToCorrectImageId(int hungerLevel, int expectedImageId)
+    {
+        //Arrange
+        using GloutonViewModel viewModel = new(_glouton);
+
+        //Act
+        _glouton.HungerLevelChanged += Raise.FreeForm<EventHandler<HungerLevelEventArgs>>
+            .With(_glouton, new HungerLevelEventArgs(hungerLevel));
+
+        //Assert
+        viewModel.ImageId.Should().Be(expectedImageId);
+    }
 }

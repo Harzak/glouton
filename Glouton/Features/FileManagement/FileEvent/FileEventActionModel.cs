@@ -7,7 +7,6 @@ namespace Glouton.Features.FileManagement.FileEvent;
 
 public sealed class FileEventActionModel
 {
-    public required Guid Id { get; set; }
     public DetectedFileEventArgs? EventArgs { get; set; }
     public string FileName => Path.GetFileName(this.EventArgs?.FilePath) ?? "<None>";
     public required Action Action { get; set; }

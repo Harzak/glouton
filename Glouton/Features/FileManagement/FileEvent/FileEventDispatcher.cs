@@ -1,6 +1,5 @@
 ﻿using Glouton.EventArgs;
 using Glouton.Interfaces;
-using Glouton.Utils.TaskScheduling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,12 @@ using System.Threading.Tasks;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
+/// <summary>
+/// Bridge between file detection events and their handling.
+/// <para>
+/// Separates components that detect file events from the code that processes those events.
+/// </para>
+/// </summary>
 internal sealed class FileEventDispatcher : IFileEventDispatcher
 {
     private bool _disposedValue;
@@ -23,15 +28,14 @@ internal sealed class FileEventDispatcher : IFileEventDispatcher
         _batchProcessor.Initialize(Invoke);
     }
 
-    public void BeginInvoke(DetectedFileEventArgs args, Action action, CancellationToken cancellationToken = default)
+    public void Enqueue(DetectedFileEventArgs args, Action action, CancellationToken cancellationToken = default)
     {
         FileEventActionModel actionInvoker = new(cancellationToken)
         {
             Action = action,
-            Id = Guid.NewGuid(),
             EventArgs = args
         };
-        this.BeginInvokeInner(() => _batchProcessor.Enqueue(actionInvoker), cancellationToken);
+        _batchProcessor.Enqueue(actionInvoker);
     }
 
     private void Invoke(List<FileEventActionModel> actions)
@@ -41,31 +45,45 @@ internal sealed class FileEventDispatcher : IFileEventDispatcher
             return;
         }
 
-        if (actions.Count == 1)
+        List<FileEventActionModel> validActions = actions.Where(a => !a.CancellationToken.IsCancellationRequested).ToList();
+
+        if (validActions.Count <= 5)
         {
-            this.Invoke(actions.First(), ParallelTaskScheduler.Current);
-            LogAction(actions.First());
+            foreach (FileEventActionModel action in validActions)
+            {
+                InvokeAction(action);
+                LogAction(action);
+            }
         }
         else
         {
-            for (var index = 0; index < actions.Count - 1; index++)
+            Parallel.ForEach(validActions, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, action =>
             {
-                this.Invoke(actions[index], SingleTaskScheduler.Current);
-                LogAction(actions[index]);
-            }
+                InvokeAction(action);
+                LogAction(action);
+            });
         }
 
-        void LogAction(FileEventActionModel action) => _logger.LogInfo($"The file has been processed.", action.FileName);
+        void LogAction(FileEventActionModel action) 
+        { 
+            _logger.LogInfo($"The file has been processed.", action.FileName); 
+        }
     }
 
-    private Task Invoke(FileEventActionModel model, TaskScheduler taskScheduler)
+    private void InvokeAction(FileEventActionModel model)
     {
-        return Task.Factory.StartNew(model.Action, model.CancellationToken, TaskCreationOptions.None, taskScheduler);
-    }
-
-    private void BeginInvokeInner(Action action, CancellationToken cancellationToken = default)
-    {
-        Task.Run(action, cancellationToken);
+        Task.Factory.StartNew(
+            model.Action,
+            model.CancellationToken,
+            TaskCreationOptions.DenyChildAttach,
+            TaskScheduler.Default)
+        .ContinueWith(t =>
+        {
+            if (t.IsFaulted && t.Exception != null)
+            {
+                _logger.LogError($"Action failed: {t.Exception.InnerException?.Message}", model.FileName);
+            }
+        }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
     }
 
     private void Dispose(bool disposing)
@@ -76,7 +94,6 @@ internal sealed class FileEventDispatcher : IFileEventDispatcher
             {
                 _batchProcessor?.Dispose();
             }
-
             _disposedValue = true;
         }
     }

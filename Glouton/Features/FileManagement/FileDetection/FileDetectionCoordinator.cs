@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Glouton.Features.FileManagement.FileDetection;
 
@@ -20,8 +21,9 @@ public sealed class FileDetectionCoordinator : IFileDetection
     private readonly Timer _cleanupTimer;
     private readonly ConcurrentDictionary<string, FileTrackingInfo> _trackedFiles;
 
+    private Action<DetectedFileEventArgs>? _fileDetectedBatch;
+
     public event EventHandler<FileDetectionStateEventArgs>? StatusChanged;
-    public event EventHandler<DetectedFileEventArgs>? FileDetected;
 
     public EFileDetectionState State { get; private set; }
 
@@ -65,15 +67,23 @@ public sealed class FileDetectionCoordinator : IFileDetection
         }
     }
 
+    public void InvokeOnFileDetected(Action<DetectedFileEventArgs> action)
+    {
+        _fileDetectedBatch = action;
+    }
+
     private void OnScanFileDetected(object? sender, DetectedFileEventArgs e)
     {
-        ProcessDetectedFile(e);
+        Task.Run(() => ProcessDetectedFile(e));
     }
 
     private void OnWatcherFileDetected(object? sender, DetectedFileEventArgs e)
     {
-        ProcessDetectedFile(e);
-        _scanner?.Change(ScanPolicy.FastScanPolicy);
+        Task.Run(() =>
+        {
+            ProcessDetectedFile(e);
+            _scanner?.Change(ScanPolicy.FastScanPolicy);
+        });
     }
 
     private void ProcessDetectedFile(DetectedFileEventArgs e)
@@ -142,15 +152,14 @@ public sealed class FileDetectionCoordinator : IFileDetection
     private void DispatchFileEvent(DetectedFileEventArgs e)
     {
         _logger.LogInfo($"File has been detected", e.FilePath);
-        _dispatcher.BeginInvoke(e, new Action(() =>
+        _dispatcher.Enqueue(e, new Action(() =>
         {
             if (Directory.Exists(e.FilePath) || File.Exists(e.FilePath))
             {
-                FileDetected?.Invoke(this, e);
+                _fileDetectedBatch?.Invoke(e);
             }
         }));
     }
-
 
     private void CleanupExpiredEntries(object? state)
     {
