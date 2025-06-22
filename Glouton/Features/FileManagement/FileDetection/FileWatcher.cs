@@ -1,4 +1,5 @@
 ﻿using Glouton.EventArgs;
+using Glouton.Utils.Result;
 using System;
 using System.IO;
 using System.Reactive.Disposables;
@@ -6,6 +7,10 @@ using System.Reactive.Linq;
 
 namespace Glouton.Features.FileManagement.FileDetection;
 
+/// <summary>
+/// Real-time file system watcher.
+/// Provides event notifications when files are changed in the watched directory,
+/// </summary>
 internal sealed class FileWatcher : IDisposable
 {
     private FileSystemWatcher? _systemFileWatcher;
@@ -21,9 +26,16 @@ internal sealed class FileWatcher : IDisposable
         _location = location;
     }
 
-    public void Start()
+    public OperationResult Start()
     {
+        if (string.IsNullOrEmpty(_location) || !Directory.Exists(_location))
+        {
+            return OperationResult.Error($"Invalid directory location specified: '{_location}'");
+        }
+
         this.Subscribe();
+
+        return OperationResult.Success;
     }
 
     private void Subscribe()

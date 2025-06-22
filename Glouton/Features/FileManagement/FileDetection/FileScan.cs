@@ -1,10 +1,16 @@
 ﻿using Glouton.EventArgs;
+using Glouton.Utils.Result;
 using System;
 using System.IO;
 using Threading = System.Threading;
 
 namespace Glouton.Features.FileManagement.FileDetection;
 
+/// <summary>
+/// Performs periodic scans of a directory to detect all files within it.
+/// Supports dynamic policy changes that affect the scan frequency and
+/// automatically reverts to the default policy after a specified duration.
+/// </summary>
 internal class FileScan : IDisposable
 {
     private Threading.Timer? _timer;
@@ -22,14 +28,16 @@ internal class FileScan : IDisposable
         _lastPolicyChangeRequestTime = DateTime.MinValue;
     }
 
-    public void Start()
+    public OperationResult Start()
     {
         if (string.IsNullOrEmpty(_location) || !Directory.Exists(_location))
         {
-            throw new ArgumentException("Invalid directory location specified.", nameof(_location));
+            return OperationResult.Error($"Invalid directory location specified: '{_location}'");
         }
 
         _timer = new Threading.Timer(this.OnTimerCallback, state: null, (int)_defaultPolicy.DueTime.TotalMilliseconds, (int)_defaultPolicy.Period.TotalMilliseconds);
+
+        return OperationResult.Success;
     }
 
     public void Change(ScanPolicy policy)

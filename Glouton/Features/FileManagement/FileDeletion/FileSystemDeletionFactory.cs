@@ -4,6 +4,11 @@ using System;
 
 namespace Glouton.Features.FileManagement.FileDeletion;
 
+/// <summary>
+/// Factory for creating FileSystemDeletion instances with different retry policies.
+/// Provides methods for creating deletion services with either exponential backoff
+/// or fixed interval retry strategies.
+/// </summary>
 public class FileSystemDeletionFactory : IFileSystemDeletionFactory
 {
     private readonly IFileSystemFacade _fileFacade;

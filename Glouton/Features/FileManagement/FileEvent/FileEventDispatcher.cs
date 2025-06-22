@@ -12,6 +12,7 @@ namespace Glouton.Features.FileManagement.FileEvent;
 /// Bridge between file detection events and their handling.
 /// <para>
 /// Separates components that detect file events from the code that processes those events.
+/// Handles queueing, batching, and asynchronous execution of file event actions.
 /// </para>
 /// </summary>
 internal sealed class FileEventDispatcher : IFileEventDispatcher

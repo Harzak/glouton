@@ -44,7 +44,7 @@ public class FileDetectionCoordinatorTests
 
         IFileDetection detection = _scope.ServiceProvider.GetRequiredService<IFileDetection>();
 
-        detection.FileDetected += (sender, args) =>
+        detection.InvokeOnFileDetected((args) =>
         {
             lock (lockObject)
             {
@@ -54,7 +54,7 @@ public class FileDetectionCoordinatorTests
                     allEventsReceived.TrySetResult(fileEvents);
                 }
             }
-        };
+        });
 
         timeout.Token.Register(() =>
         {

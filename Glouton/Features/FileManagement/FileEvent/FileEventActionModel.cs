@@ -5,6 +5,11 @@ using System.Threading;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
+/// <summary>
+/// Model class that encapsulates a file event action to be executed.
+/// Contains the file event arguments, the action to perform, and 
+/// cancellation support for controlling the action's execution.
+/// </summary>
 public sealed class FileEventActionModel
 {
     public DetectedFileEventArgs? EventArgs { get; set; }

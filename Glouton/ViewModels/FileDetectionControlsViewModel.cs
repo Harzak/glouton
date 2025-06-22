@@ -13,8 +13,8 @@ public class FileDetectionControlsViewModel : BaseViewModel
     public ICommand StartDetectionCommand { get; }
     public ICommand StopDetectionCommand { get; }
 
-    public bool CanBeStopped => _fileDetection.State ==  EFileDetectionState.Enabled || _fileDetection.State == EFileDetectionState.Started;
-    public bool CanBeStarted => _fileDetection.State ==  EFileDetectionState.Stopped;
+    public bool CanBeStopped => _fileDetection.State == EFileDetectionState.Started;
+    public bool CanBeStarted => _fileDetection.State ==  EFileDetectionState.Enabled || _fileDetection.State ==  EFileDetectionState.Stopped;
 
     public FileDetectionControlsViewModel(IFileDetection fileDetection, ISettingsService settingsService)
     {

@@ -1,5 +1,6 @@
 ﻿using Glouton.EventArgs;
 using Glouton.Interfaces;
+using Glouton.Utils.Result;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,6 +10,11 @@ using System.Threading.Tasks;
 
 namespace Glouton.Features.FileManagement.FileDetection;
 
+/// <summary>
+/// Central coordinator for file detection that manages both active scanning and
+/// file system watching. Tracks detected files, throttles repeated detections,
+/// and dispatches file events to registered handlers through the event dispatcher.
+/// </summary>
 public sealed class FileDetectionCoordinator : IFileDetection
 {
     private readonly ILoggingService _logger;
@@ -43,12 +49,22 @@ public sealed class FileDetectionCoordinator : IFileDetection
         {
             _scanner = new FileScan(location, ScanPolicy.SlowScanPolicy);
             _scanner.FileDetected += this.OnScanFileDetected;
-            _scanner.Start();
+            OperationResult scanStart = _scanner.Start();
+            if (scanStart.IsFailed && scanStart.HasError)
+            {
+                _logger.LogError(scanStart.ErrorMessage);
+                return;
+            }
 
             _watcher = new FileWatcher(location);
             _watcher.FileDetected += this.OnWatcherFileDetected;
             _watcher.Error += this.OnError;
-            _watcher.Start();
+            OperationResult watcherStart = _watcher.Start();
+            if (watcherStart.IsFailed && watcherStart.HasError)
+            {
+                _logger.LogError(scanStart.ErrorMessage);
+                return;
+            }
 
             _logger.LogInfo($"File detection enabled for: '{location}'.");
             this.SetState(EFileDetectionState.Started);

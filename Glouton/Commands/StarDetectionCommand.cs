@@ -16,7 +16,7 @@ public class StarDetectionCommand : BaseRelayCommand
 
     public override bool CanExecute(object? parameter)
     {
-        return _fileDetection.State == EFileDetectionState.Stopped;
+        return _fileDetection.State == EFileDetectionState.Enabled ||_fileDetection.State == EFileDetectionState.Stopped ;
     }
 
     public override void Execute(object? parameter)

@@ -2,6 +2,10 @@
 
 namespace Glouton.Features.FileManagement.FileDetection;
 
+/// <summary>
+/// Tracks information about a detected file, including its metadata and
+/// the times it was last seen and dispatched.
+/// </summary>
 internal class FileTrackingInfo
 {
     private static readonly TimeSpan DispatchThrottleWindow = TimeSpan.FromSeconds(2);

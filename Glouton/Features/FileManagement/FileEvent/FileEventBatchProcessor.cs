@@ -11,6 +11,11 @@ using System.Timers;
 
 namespace Glouton.Features.FileManagement.FileEvent;
 
+/// <summary>
+/// Processes file events in batches to improve performance and reduce system load.
+/// Uses a timer-based approach to collect events in a queue and process them in
+/// batches of a configurable size when the timer elapses.
+/// </summary>
 internal sealed class FileEventBatchProcessor : IFileEventBatchProcessor
 {
     private readonly ILoggingService _logger;

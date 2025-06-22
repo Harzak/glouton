@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 
 namespace Glouton.Features.FileManagement.FileDeletion;
 
+/// <summary>
+/// Responsible for deleting files and directories with a retry mechanism.
+/// Handles both individual file deletion and recursive directory deletion,
+/// applying the specified retry policy when operations fail.
+/// </summary>
 internal sealed class FileSystemDeletion : IFileSystemDeletion
 {
     private readonly IFileSystemFacade _fileDeletion;
@@ -109,30 +114,28 @@ internal sealed class FileSystemDeletion : IFileSystemDeletion
 
     private OperationResult DeleteFileSystemEntry(string path, IFileSystemFacade deletionProxy)
     {
-        OperationResult result = new();
         try
         {
             deletionProxy.Delete(path);
 
             if (!deletionProxy.Exists(path))
             {
-                return result.WithSuccess();
+                return OperationResult.Success;
             }
         }
         catch (UnauthorizedAccessException)
         {
-            return result.WithError($"Deletion failed: Unauthorized access for {path}.");
+            return OperationResult.Error($"Deletion failed: Unauthorized access for {path}.");
         }
         catch (IOException)
         {
-            return result.WithError($"Deletion failed: IO error for {path}.");
+            return OperationResult.Error($"Deletion failed: IO error for {path}.");
         }
         catch (Exception)
         {
-            result.WithError($"Deletion failed with unexpected error for {path}.");
             throw;
         }
 
-        return result.WithError("Deletion failed: unknown error.");
+        return OperationResult.Error("Deletion failed: unknown error.");
     }
 }

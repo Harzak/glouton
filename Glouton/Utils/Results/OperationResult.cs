@@ -21,16 +21,25 @@ public class OperationResult : BaseResult
         return this;
     }
 
+    public static OperationResult Success => new OperationResult().WithSuccess();
+
     public OperationResult WithFailure()
     {
         base.IsSuccess = false;
         return this;
     }
 
+    public static OperationResult Failure => new OperationResult().WithFailure();
+
     public OperationResult WithError(string message)
     {
         base.ErrorMessage = message;
         return this.WithFailure();
+    }
+
+    public static OperationResult Error(string message)
+    {
+        return new OperationResult().WithError(message);
     }
 
     public void Affect(OperationResult result)
